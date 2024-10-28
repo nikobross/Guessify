@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, url_for, session, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import os
-from db import init_db, add_user, get_user_by_email, update_spotify_tokens, add_game, get_games_by_user
+from db import init_db, add_user
 from db import db, User
 import json
 
@@ -55,6 +55,8 @@ def load_user(user_id):
 
 # ------------ HELPER FUNCTIONS ------------
 
+
+
 def success_response(message, status_code=200):
     return jsonify({'message': message}), status_code
 
@@ -71,13 +73,25 @@ def check_fields(body, fields):
    if missing_fields:
         return error_response(f'Missing fields: {", ".join(missing_fields)}')
 
+def check_user():
+    if not current_user.is_authenticated:
+        return error_response('User not logged in', 401)
+
+def user_to_dict(user):
+    return {
+        'id': user.id,
+        'username': user.username,
+        'spotify_token': user.spotify_token,
+        'spotify_refresh_token': user.spotify_refresh_token
+    }
+
+
 
 # ----------------- ROUTES -----------------
 
 
 
-
-@app.route('/create-user', methods=['POST'])
+@app.route('/user/', methods=['POST'])
 def create_user():
 
     body = json.loads(request.data)
@@ -86,10 +100,31 @@ def create_user():
     
     username = body['username']
     password = body['password']
-    
-    add_user(username, password)
-    return jsonify({'message': 'User created successfully'}), 200
 
+    add_user(username, password)
+    return success_response('User created')
+
+@app.route('/user/<int:user_id>', methods=['GET'])
+def get_user_by_id(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    return success_response(user_to_dict(user))
+
+@app.route('/user/login/', methods=['POST'])
+def login():
+    body = json.loads(request.data)
+
+    check_fields(body, ['username', 'password'])
+
+    username = body['username']
+    password = body['password']
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user or not user.check_password(password):
+        return error_response('Invalid username or password', 401)
+
+    login_user(user)
+    return success_response('User logged in')
 
 
 if __name__ == '__main__':
