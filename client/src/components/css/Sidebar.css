@@ -30,3 +30,24 @@
   text-decoration: underline; /* Underline the text when hovered */
   cursor: pointer; /* Ensure cursor pointer on hover */
 }
+
+.right-sidebar {
+    position: fixed;
+    top: 50%;
+    right: -260px; /* Initially hide the right sidebar */
+    width: 250px;
+    transform: translateY(-50%); /* Center the sidebar vertically */
+    height: calc(100% - 4px);;
+    background-color: #444;
+    transition: right 0.3s ease;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    outline: 2px solid #888; /* Add a thin outline */
+  }
+  
+  .right-sidebar.visible {
+    right: 0; /* Show the right sidebar */
+  }

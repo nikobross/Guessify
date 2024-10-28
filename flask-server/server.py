@@ -126,6 +126,12 @@ def login():
     login_user(user)
     return success_response('User logged in')
 
+@app.route('/user/logout/', methods=['POST'])
+def logout():
+    check_user()
+    logout_user()
+    return success_response('User logged out')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

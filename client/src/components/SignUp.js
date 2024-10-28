@@ -1,16 +1,15 @@
-// src/components/Login.js
+// src/components/SignUp.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/Auth.css';
 
-function Login() {
+function SignUp() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('/user/login/', {
+    const response = await fetch('/user/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,16 +18,15 @@ function Login() {
     });
 
     if (response.ok) {
-      localStorage.setItem('isLoggedIn', 'true'); // Save login state
-      navigate('/');
+      navigate('/login');
     } else {
-      alert('Login failed');
+      alert('Sign-up failed');
     }
   };
 
   return (
     <div className="auth-container">
-      <h2>Login</h2>
+      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label>Username:</label>
@@ -48,11 +46,10 @@ function Login() {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">Sign Up</button>
       </form>
-      <button onClick={() => navigate('/signup')}>Sign Up</button>
     </div>
   );
 }
 
-export default Login;
+export default SignUp;
