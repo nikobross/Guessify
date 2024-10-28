@@ -16,10 +16,20 @@ db = SQLAlchemy()
 # Define the User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(150), unique=True, nullable=False)
+    username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     spotify_token = db.Column(db.String(500), nullable=True)
     spotify_refresh_token = db.Column(db.String(500), nullable=True)
+
+# Define the Game model
+class Game(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game_id = db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    answer = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
+
+    user = db.relationship('User', backref=db.backref('games', lazy=True))
 
 # Function to initialize the database
 def init_db(app):
@@ -28,17 +38,7 @@ def init_db(app):
         db.create_all()
 
 # Function to add a new user
-def add_user(email, password):
-    new_user = User(email=email, password=password)
+def add_user(username, password):
+    new_user = User(username=username, password=password)
     db.session.add(new_user)
-    db.session.commit()
-
-# Function to get a user by email
-def get_user_by_email(email):
-    return User.query.filter_by(email=email).first()
-
-# Function to update Spotify tokens for a user
-def update_spotify_tokens(user, access_token, refresh_token):
-    user.spotify_token = access_token
-    user.spotify_refresh_token = refresh_token
     db.session.commit()

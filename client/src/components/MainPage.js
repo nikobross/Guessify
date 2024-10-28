@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './MainPage.css';
 
+/**
+ * Cards with premade games should be displayed on the main page.
+ * One card should be for creating a custom game.
+ * There should also be a join game button
+ */
+
+
 const MainPage = () => {
   const navigate = useNavigate();
   const [sidebarVisible, setSidebarVisible] = useState(false);
