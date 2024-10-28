@@ -1,5 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
 
+
+"""
+Database notes:
+
+SQL alchemy allows for working with sqlite for now but can be changed to
+a different database later on.
+
+
+"""
+
 # Initialize the database
 db = SQLAlchemy()
 

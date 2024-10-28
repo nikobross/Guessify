@@ -9,17 +9,16 @@ Info to look into before building:
 
 This to remeber:
     1. Create a requirements.txt file
+    2. Create a proper authorization system (OAuth2 maybe?)
+    2. Create a Dockerfile
 
 Routes:
     1. /login
     2. /signup
-    3. /play
-    4. /pause
-    5. /skip
-    6. /guess
-    7. /leaderboard
-    8. /profile
-    9. /update_profile
-    10. /logout
-    11. /refresh_token
+    3. /play_song
+    4. /check_answers
+    5. /leaderboard
+    6. /profile
+    7. /logout
+    8. /refresh_token
 """
