@@ -7,7 +7,7 @@ Database notes:
 SQL alchemy allows for working with sqlite for now but can be changed to
 a different database later on.
 
-
+SQL lite seems like the righr choice for now.
 """
 
 # Initialize the database
