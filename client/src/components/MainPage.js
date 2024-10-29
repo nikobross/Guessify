@@ -43,26 +43,6 @@ const MainPage = () => {
     setRightSidebarVisible(false);
   };
 
-  const handleSignOut = async () => {
-    const response = await fetch('/user/logout/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('username');
-      setIsLoggedIn(false);
-      setUsername('');
-      closeSidebars();
-      navigate('/');
-    } else {
-      alert('Sign out failed');
-    }
-  };
-
   const userIcon = isLoggedIn ? (
     <div className="user-initial">{username.charAt(0).toUpperCase()}</div>
   ) : (
@@ -96,8 +76,8 @@ const MainPage = () => {
           <div className="close-button" onClick={toggleRightSidebar}>&times;</div>
           {isLoggedIn ? (
             <>
-              <p>Profile</p>
-              <p onClick={handleSignOut}>Sign Out</p>
+              <p onClick={() => navigate('/profile')}>Profile</p>
+              <p>Sign Out</p>
             </>
           ) : (
             <>

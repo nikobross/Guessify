@@ -1,0 +1,66 @@
+/* src/css/UserProfile.css */
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #333; /* Grey background */
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-container h1 {
+  margin-bottom: 20px;
+}
+
+.profile-container img {
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.update-fields {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #333; /* Original background color */
+  border-radius: 5px;
+  background-color: #e0ffe0; /* Green input fields */
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #45a049; /* Green border on focus */
+  box-shadow: 0 0 5px #45a049; /* Green shadow on focus */
+}
+
+.input-group button {
+  padding: 10px 20px;
+  background-color: #45a049; /* Green button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.input-group button:hover {
+  background-color: #3d8b41;
+}

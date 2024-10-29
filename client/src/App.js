@@ -5,6 +5,9 @@ import HostGame from './components/HostGame';
 import JoinGame from './components/JoinGame';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
+import SpotifyLogin from './components/SpotifyLogin';
+import SpotifyCallback from './components/SpotifyCallback';
+import UserProfile from './components/UserProfile';
 
 function App() {
   return (
@@ -15,6 +18,9 @@ function App() {
         <Route path="/join" element={<JoinGame />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/spotify-login" element={<SpotifyLogin />} />
+        <Route path="/callback" element={<SpotifyCallback />} />
+        <Route path="/profile" element={<UserProfile />} />
       </Routes>
     </Router>
   );

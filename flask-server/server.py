@@ -132,6 +132,13 @@ def logout():
     logout_user()
     return success_response('User logged out')
 
+@app.route('/user/spotify/<int:user_id>', methods=['GET'])
+def get_spotify_token(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    return success_response(user.spotify_token)
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
