@@ -180,6 +180,22 @@ def spotify_login():
     db.session.commit()
     return jsonify({'message': 'Spotify login successful'})
 
+@app.route('/user/update-username/', methods=['POST'])
+def update_username():
+    if not current_user.is_authenticated:
+        return error_response('User not logged in', 401)
+
+    body = json.loads(request.data)
+
+    check_fields(body, ['username'])
+
+    new_username = body['username']
+
+    current_user.username = new_username
+    db.session.commit()
+
+    return success_response('Username updated')
+
 
 
 
@@ -293,8 +309,6 @@ def callback():
         return jsonify(tokens)
     else:
         return jsonify({'message': 'Failed to exchange authorization code'}), 400
-
-
 
 
 

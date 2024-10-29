@@ -8,6 +8,7 @@ const UserProfile = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,14 +38,29 @@ const UserProfile = () => {
     navigate('/spotify-login');
   };
 
-  const handleUpdateUsername = () => {
-    // Placeholder for updating username
-    console.log('Update username:', username);
-  };
+  const handleUpdateUsername = async () => {
+    try {
+      const response = await fetch('/user/update-username/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username }),
+      });
 
-  const handleUpdatePassword = () => {
-    // Placeholder for updating password
-    console.log('Update password:', password);
+      if (response.ok) {
+        const data = await response.json();
+        setSuccessMessage(data.message);
+        setErrorMessage('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message);
+        setSuccessMessage('');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating the username.');
+      setSuccessMessage('');
+    }
   };
 
   return (
@@ -77,15 +93,8 @@ const UserProfile = () => {
               onChange={(e) => setUsername(e.target.value)}
             />
             <button className="custom-button" onClick={handleUpdateUsername}>Update Username</button>
-          </div>
-          <div className="input-group">
-            <label>Update Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <button className="custom-button" onClick={handleUpdatePassword}>Update Password</button>
+            {successMessage && <p className="success-message">{successMessage}</p>}
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
           </div>
         </div>
       </div>
