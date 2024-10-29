@@ -20,6 +20,17 @@
   margin-bottom: 20px;
 }
 
+.spotify-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.spotify-login-text {
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+
 .update-fields {
   margin-top: 20px;
   width: 100%;
@@ -73,3 +84,4 @@
   color: red;
   margin-top: 10px;
 }
+

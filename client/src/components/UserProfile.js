@@ -1,6 +1,6 @@
-// src/components/UserProfile.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TopBar from './TopBars';
 import './css/UserProfile.css';
 
 const UserProfile = () => {
@@ -48,39 +48,45 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="profile-container">
-      <h1>User Profile</h1>
-      {profile ? (
-        <div>
-          <h2>{profile.display_name}</h2>
-          <img src={profile.images?.[0]?.url || 'default-profile.png'} alt="Profile" />
-          <p>{profile.email}</p>
-          <p>Logged in with Spotify</p>
-        </div>
-      ) : (
-        <div>
-          <button className="custom-button" onClick={handleSpotifyLogin}>Log in with Spotify</button>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-        </div>
-      )}
-      <div className="update-fields">
-        <div className="input-group">
-          <label>Update Username:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <button className="custom-button" onClick={handleUpdateUsername}>Update Username</button>
-        </div>
-        <div className="input-group">
-          <label>Update Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button className="custom-button" onClick={handleUpdatePassword}>Update Password</button>
+    <div>
+      <TopBar
+        isLoggedIn={true} // Assuming the user is logged in if they are on the profile page
+        username={username}
+        toggleSidebar={() => {}}
+        toggleRightSidebar={() => {}}
+      />
+      <div className="profile-container">
+        <h1>User Profile</h1>
+        {profile ? (
+          <div className="spotify-profile">
+            <p className="spotify-login-text">Logged into Spotify as {profile.display_name}</p>
+            <img src={profile.images?.[0]?.url || 'default-profile.png'} alt="Profile" />
+          </div>
+        ) : (
+          <div>
+            <button className="custom-button" onClick={handleSpotifyLogin}>Log in with Spotify</button>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+          </div>
+        )}
+        <div className="update-fields">
+          <div className="input-group">
+            <label>Update Username:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <button className="custom-button" onClick={handleUpdateUsername}>Update Username</button>
+          </div>
+          <div className="input-group">
+            <label>Update Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button className="custom-button" onClick={handleUpdatePassword}>Update Password</button>
+          </div>
         </div>
       </div>
     </div>

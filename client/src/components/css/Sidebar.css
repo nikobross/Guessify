@@ -1,7 +1,7 @@
 .sidebar {
     position: fixed;
     top: 50%;
-    left: -260px; /* Initially hide the sidebar */
+    left: -250px; /* Initially hide the sidebar */
     transform: translateY(-50%); /* Center the sidebar vertically */
     width: 250px;
     height: calc(100% - 4px); /* Shrink the height to add margin at the bottom */
@@ -12,11 +12,12 @@
     z-index: 2000;
     display: flex;
     flex-direction: column;
-    outline: 2px solid #888; /* Add a thin outline */
+    outline: none;
 }
 
 .sidebar.visible {
     left: 0; /* Show the sidebar */
+    outline: 2px solid #888;
 }
 
 .sidebar-content {
@@ -34,7 +35,7 @@
 .right-sidebar {
     position: fixed;
     top: 50%;
-    right: -260px; /* Initially hide the right sidebar */
+    right: -250px; /* Initially hide the right sidebar */
     width: 250px;
     transform: translateY(-50%); /* Center the sidebar vertically */
     height: calc(100% - 4px);;
@@ -45,9 +46,10 @@
     z-index: 2000;
     display: flex;
     flex-direction: column;
-    outline: 2px solid #888; /* Add a thin outline */
+    outline: none;
   }
   
   .right-sidebar.visible {
     right: 0; /* Show the right sidebar */
+    outline: 2px solid #888;
   }

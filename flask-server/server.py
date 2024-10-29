@@ -202,7 +202,7 @@ def user_profile():
             'Authorization': f'Bearer {current_user.spotify_token}'
         }
         response = requests.get('https://api.spotify.com/v1/me', headers=headers)
-        
+
         if response.status_code == 200:
             spotify_profile = response.json()
         else:
@@ -217,19 +217,12 @@ def user_profile():
     return jsonify(user_data)
 
 
-
-
-
-
-
 @app.route('/user/spotify-token', methods=['POST'])
 def spotify_token():
     if not current_user.is_authenticated:
         return jsonify({'message': 'User not authenticated'}), 401
 
     code = request.json.get('code')
-
-    print('code', code)
 
     client_id = 'b5d98381070641b38c70deafcae79169'
     client_secret = 'c6818fe6cb7d4f6ca9311f92609561bc'
@@ -243,8 +236,6 @@ def spotify_token():
         'client_id': client_id,
         'client_secret': client_secret,
     })
-
-    print('response', response)
 
     if response.status_code == 200:
         tokens = response.json()
