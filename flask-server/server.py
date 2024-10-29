@@ -4,6 +4,8 @@ import os
 from db import init_db, add_user
 from db import db, User
 import json
+import requests
+import datetime
 
 """
 Server for Guessify
@@ -85,6 +87,28 @@ def user_to_dict(user):
         'spotify_refresh_token': user.spotify_refresh_token
     }
 
+def refresh_spotify_token(user):
+    refresh_token = user.spotify_refresh_token
+    client_id = 'b5d98381070641b38c70deafcae79169'
+    client_secret = 'c6818fe6cb7d4f6ca9311f92609561bc'
+    token_url = 'https://accounts.spotify.com/api/token'
+
+    response = requests.post(token_url, data={
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token,
+        'client_id': client_id,
+        'client_secret': client_secret,
+    })
+
+    if response.status_code == 200:
+        tokens = response.json()
+        user.spotify_token = tokens['access_token']
+        user.spotify_token_expiry = datetime.datetime.now(datetime.timezone.utc) \
+            + datetime.timedelta(seconds=tokens['expires_in'])
+        db.session.commit()
+        return True
+    else:
+        return False
 
 
 # ----------------- ROUTES -----------------
@@ -138,7 +162,12 @@ def spotify_login():
         return jsonify({'message': 'User not authenticated'}), 401
 
     access_token = request.json.get('access_token')
-    current_user.spotify_access_token = access_token
+    refresh_token = request.json.get('refresh_token')
+    expires_in = request.json.get('expires_in')
+
+    current_user.spotify_token = access_token
+    current_user.spotify_refresh_token = refresh_token
+    current_user.spotify_token_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=expires_in)
     current_user.spotify_logged_in = True
     db.session.commit()
     return jsonify({'message': 'Spotify login successful'})
@@ -148,10 +177,14 @@ def user_profile():
     if not current_user.is_authenticated:
         return jsonify({'message': 'User not authenticated'}), 401
 
+    if current_user.spotify_token_expiry and current_user.spotify_token_expiry < datetime.datetime.now(datetime.timezone.utc):
+        if not refresh_spotify_token(current_user):
+            return jsonify({'message': 'Failed to refresh Spotify token'}), 401
+
     user_data = {
         'username': current_user.username,
         'spotify_logged_in': current_user.spotify_logged_in,
-        'spotify_access_token': current_user.spotify_access_token
+        'spotify_token': current_user.spotify_token
     }
     return jsonify(user_data)
 

@@ -29,11 +29,15 @@
 .input-group {
   margin-bottom: 15px;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align items */
 }
 
 .input-group label {
   display: block;
   margin-bottom: 5px;
+  width: 100%; /* Ensure label takes full width */
 }
 
 .input-group input {
@@ -41,7 +45,7 @@
   padding: 10px;
   border: 2px solid #333; /* Original background color */
   border-radius: 5px;
-  background-color: white; /* Green input fields */
+  background-color: white; /* White background */
 }
 
 .input-group input:focus {
@@ -50,7 +54,7 @@
   box-shadow: 0 0 5px #45a049; /* Green shadow on focus */
 }
 
-.input-group button {
+.custom-button {
   padding: 10px 20px;
   background-color: #45a049; /* Green button */
   color: white;
@@ -61,6 +65,11 @@
   text-align: center;
 }
 
-.input-group button:hover {
+.custom-button:hover {
   background-color: #3d8b41;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }

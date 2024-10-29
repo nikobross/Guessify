@@ -7,7 +7,7 @@ const UserProfile = () => {
   const [profile, setProfile] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [spotifyLoggedIn, setSpotifyLoggedIn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,24 +22,8 @@ const UserProfile = () => {
       if (response.ok) {
         const data = await response.json();
         setUsername(data.username);
-        setSpotifyLoggedIn(data.spotify_logged_in);
-
-        if (data.spotify_logged_in) {
-          const accessToken = data.spotify_access_token;
-          fetch('https://api.spotify.com/v1/me', {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          })
-            .then(response => response.json())
-            .then(data => {
-              setProfile(data);
-            })
-            .catch(error => {
-              console.error('Error fetching profile:', error);
-            });
-        }
       } else {
+        console.error('Error fetching user profile:', response.statusText);
         navigate('/login');
       }
     };
@@ -48,18 +32,8 @@ const UserProfile = () => {
   }, [navigate]);
 
   const handleSpotifyLogin = () => {
-    const clientId = 'b5d98381070641b38c70deafcae79169';
-    const redirectUri = 'http://localhost:3000/callback';
-    const scopes = [
-      'user-read-private',
-      'user-read-email',
-      'user-modify-playback-state',
-      'user-read-playback-state',
-      'streaming',
-    ];
-
-    const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes.join(' '))}`;
-    window.location.href = authUrl;
+    // Placeholder for Spotify login functionality
+    console.log('Spotify login button clicked');
   };
 
   const handleUpdateUsername = () => {
@@ -78,12 +52,15 @@ const UserProfile = () => {
       {profile ? (
         <div>
           <h2>{profile.display_name}</h2>
-          <img src={profile.images[0]?.url} alt="Profile" />
+          <img src={profile.images?.[0]?.url || 'default-profile.png'} alt="Profile" />
           <p>{profile.email}</p>
           <p>Logged in with Spotify</p>
         </div>
       ) : (
-        <button className="custom-button" onClick={handleSpotifyLogin}>Log in with Spotify</button>
+        <div>
+          <button className="custom-button" onClick={handleSpotifyLogin}>Log in with Spotify</button>
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+        </div>
       )}
       <div className="update-fields">
         <div className="input-group">
