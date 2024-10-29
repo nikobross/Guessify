@@ -50,7 +50,7 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 
 # ------------ HELPER FUNCTIONS ------------
@@ -132,13 +132,28 @@ def logout():
     logout_user()
     return success_response('User logged out')
 
-@app.route('/user/spotify/<int:user_id>', methods=['GET'])
-def get_spotify_token(user_id):
-    user = User.query.filter_by(id=user_id).first()
-    return success_response(user.spotify_token)
+@app.route('/user/spotify-login', methods=['POST'])
+def spotify_login():
+    if not current_user.is_authenticated:
+        return jsonify({'message': 'User not authenticated'}), 401
 
+    access_token = request.json.get('access_token')
+    current_user.spotify_access_token = access_token
+    current_user.spotify_logged_in = True
+    db.session.commit()
+    return jsonify({'message': 'Spotify login successful'})
 
+@app.route('/user/profile', methods=['GET'])
+def user_profile():
+    if not current_user.is_authenticated:
+        return jsonify({'message': 'User not authenticated'}), 401
 
+    user_data = {
+        'username': current_user.username,
+        'spotify_logged_in': current_user.spotify_logged_in,
+        'spotify_access_token': current_user.spotify_access_token
+    }
+    return jsonify(user_data)
 
 if __name__ == '__main__':
     app.run(debug=True)

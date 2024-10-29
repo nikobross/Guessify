@@ -11,25 +11,41 @@ const UserProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('spotifyAccessToken');
-
-    if (accessToken) {
-      fetch('https://api.spotify.com/v1/me', {
+    const fetchProfile = async () => {
+      const response = await fetch('/user/profile', {
+        method: 'GET',
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
         },
-      })
-        .then(response => response.json())
-        .then(data => {
-          setProfile(data);
-          setSpotifyLoggedIn(true);
-        })
-        .catch(error => {
-          console.error('Error fetching profile:', error);
-          setSpotifyLoggedIn(false);
-        });
-    }
-  }, []);
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUsername(data.username);
+        setSpotifyLoggedIn(data.spotify_logged_in);
+
+        if (data.spotify_logged_in) {
+          const accessToken = data.spotify_access_token;
+          fetch('https://api.spotify.com/v1/me', {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+            .then(response => response.json())
+            .then(data => {
+              setProfile(data);
+            })
+            .catch(error => {
+              console.error('Error fetching profile:', error);
+            });
+        }
+      } else {
+        navigate('/login');
+      }
+    };
+
+    fetchProfile();
+  }, [navigate]);
 
   const handleSpotifyLogin = () => {
     const clientId = 'b5d98381070641b38c70deafcae79169';
@@ -67,7 +83,7 @@ const UserProfile = () => {
           <p>Logged in with Spotify</p>
         </div>
       ) : (
-        <button onClick={handleSpotifyLogin}>Log in with Spotify</button>
+        <button className="custom-button" onClick={handleSpotifyLogin}>Log in with Spotify</button>
       )}
       <div className="update-fields">
         <div className="input-group">
@@ -77,7 +93,7 @@ const UserProfile = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-          <button onClick={handleUpdateUsername}>Update Username</button>
+          <button className="custom-button" onClick={handleUpdateUsername}>Update Username</button>
         </div>
         <div className="input-group">
           <label>Update Password:</label>
@@ -86,7 +102,7 @@ const UserProfile = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button onClick={handleUpdatePassword}>Update Password</button>
+          <button className="custom-button" onClick={handleUpdatePassword}>Update Password</button>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
-/* src/css/Auth.css */
-.auth-container {
+/* src/css/Auth.module.css */
+.authContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,53 +9,55 @@
   color: white;
 }
 
-.auth-box {
+.authBox {
   background-color: #444; /* Lighter gray box */
-  padding: 20px;
+  padding: 40px; /* Increase padding for more space inside the box */
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center; /* Center all text, links, and buttons */
+  width: 320px; /* Increase width */
+  max-width: 90%; /* Ensure it doesn't overflow on smaller screens */
 }
 
-.auth-box h2 {
+.authBox h2 {
   margin-bottom: 20px;
 }
 
-.input-group {
+.loginInputGroup {
   margin-bottom: 15px;
   text-align: left; /* Align labels to the left */
 }
 
-.input-group label {
+.loginInputGroup label {
   display: block;
   margin-bottom: 5px;
 }
 
-.input-group input {
-  width: 300px;
+.loginInputGroup input {
+  width: calc(100% - 20px); /* Make input fields take full width of the box minus padding */
   padding: 10px;
   border: 2px solid #333; /* Original background color */
   border-radius: 5px;
-  background-color: #ffffff; /* Green input fields */
+  background-color: #ffffff; /* White background */
 }
 
-.input-group input:focus {
+.loginInputGroup input:focus {
   outline: none;
   border-color: #45a049; /* Green border on focus */
   box-shadow: 0 0 5px #45a049; /* Green shadow on focus */
 }
 
-.input-group input.error {
+.loginInputGroup input.error {
   border-color: #d02222; /* Red border on error */
 }
 
-.error-message {
+.errorMessage {
   color: #d02222;
   margin-top: 5px;
   font-size: 14px;
 }
 
-.login-button, .signup-button {
+.loginButton, .signupButton {
   padding: 10px 20px;
   background-color: #45a049; /* Green button */
   color: white;
@@ -66,17 +68,17 @@
   text-align: center;
 }
 
-.login-button:hover, .signup-button:hover {
+.loginButton:hover, .signupButton:hover {
   background-color: #3d8b41;
 }
 
-.signup-link, .login-link {
+.signupLink, .loginLink {
   margin-top: 10px;
-  color: white; /* Green text link */
+  color: white; /* White text link */
   cursor: pointer;
   text-decoration: underline;
 }
 
-.signup-link:hover, .login-link:hover {
+.signupLink:hover, .loginLink:hover {
   color: #3d8b41;
 }

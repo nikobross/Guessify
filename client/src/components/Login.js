@@ -1,7 +1,7 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/Auth.css';
+import styles from './css/Auth.module.css';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -29,11 +29,11 @@ function Login() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
+    <div className={styles.authContainer}>
+      <div className={styles.authBox}>
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
-          <div className="input-group">
+          <div className={styles.loginInputGroup}>
             <label>Username:</label>
             <input
               type="text"
@@ -42,20 +42,20 @@ function Login() {
               required
             />
           </div>
-          <div className="input-group">
+          <div className={styles.loginInputGroup}>
             <label>Password:</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className={errorMessage ? 'error' : ''}
+              className={errorMessage ? styles.error : ''}
             />
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
+            {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
           </div>
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className={styles.loginButton}>Login</button>
         </form>
-        <p className="signup-link" onClick={() => navigate('/signup')}>Sign Up</p>
+        <p className={styles.signupLink} onClick={() => navigate('/signup')}>Sign Up</p>
       </div>
     </div>
   );

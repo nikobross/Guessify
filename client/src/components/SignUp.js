@@ -1,7 +1,7 @@
 // src/components/SignUp.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/Auth.css';
+import styles from './css/Auth.module.css';
 
 function SignUp() {
   const [username, setUsername] = useState('');
@@ -13,7 +13,7 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setErrorMessage('*passwords must match');
+      setErrorMessage('Passwords must match');
       return;
     }
 
@@ -33,11 +33,11 @@ function SignUp() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
+    <div className={styles.authContainer}>
+      <div className={styles.authBox}>
         <h2>Sign Up</h2>
         <form onSubmit={handleSubmit}>
-          <div className="input-group">
+          <div className={styles.loginInputGroup}>
             <label>Username:</label>
             <input
               type="text"
@@ -46,7 +46,7 @@ function SignUp() {
               required
             />
           </div>
-          <div className="input-group">
+          <div className={styles.loginInputGroup}>
             <label>Password:</label>
             <input
               type="password"
@@ -55,20 +55,20 @@ function SignUp() {
               required
             />
           </div>
-          <div className="input-group">
+          <div className={styles.loginInputGroup}>
             <label>Confirm Password:</label>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className={errorMessage ? 'error' : ''}
+              className={errorMessage ? styles.error : ''}
             />
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
+            {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
           </div>
-          <button type="submit" className="login-button">Create Account</button>
+          <button type="submit" className={styles.signupButton}>Create Account</button>
         </form>
-        <p className="signup-link" onClick={() => navigate('/login')}>Login</p>
+        <p className={styles.loginLink} onClick={() => navigate('/login')}>Login</p>
       </div>
     </div>
   );

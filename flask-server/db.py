@@ -13,16 +13,14 @@ SQL lite seems like the righr choice for now.
 # Initialize the database
 db = SQLAlchemy()
 
-# Initialize the database
-db = SQLAlchemy()
-
 # Define the User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(150), nullable=False)
-    spotify_token = db.Column(db.String(500), nullable=True)
-    spotify_refresh_token = db.Column(db.String(500), nullable=True)
+    spotify_access_token = db.Column(db.String(500), nullable=True, default=None)
+    spotify_refresh_token = db.Column(db.String(500), nullable=True, default=None)
+    spotify_logged_in = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -11,10 +11,24 @@ const SpotifyCallback = () => {
     const accessToken = params.get('access_token');
 
     if (accessToken) {
-      localStorage.setItem('spotifyAccessToken', accessToken);
-      navigate('/');
+      fetch('/user/spotify-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ access_token: accessToken }),
+      })
+        .then(response => response.json())
+        .then(() => {
+          localStorage.setItem('spotifyAccessToken', accessToken);
+          navigate('/profile');
+        })
+        .catch(error => {
+          console.error('Error logging in with Spotify:', error);
+          navigate('/login');
+        });
     } else {
-      navigate('/profile');
+      navigate('/login');
     }
   }, [navigate]);
 
