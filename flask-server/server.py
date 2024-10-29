@@ -1,11 +1,14 @@
 from flask import Flask, request, redirect, url_for, session, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import os
+import random
+import urllib.parse
 from db import init_db, add_user
 from db import db, User
 import json
 import requests
 import datetime
+import string
 
 """
 Server for Guessify
@@ -57,7 +60,8 @@ def load_user(user_id):
 
 # ------------ HELPER FUNCTIONS ------------
 
-
+def generate_random_string(length):
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
 
 def success_response(message, status_code=200):
     return jsonify({'message': message}), status_code
@@ -84,7 +88,9 @@ def user_to_dict(user):
         'id': user.id,
         'username': user.username,
         'spotify_token': user.spotify_token,
-        'spotify_refresh_token': user.spotify_refresh_token
+        'spotify_refresh_token': user.spotify_refresh_token,
+        'spotify_token_expiry': user.spotify_token_expiry,
+        'spotify_logged_in': user.spotify_logged_in
     }
 
 def refresh_spotify_token(user):
@@ -131,6 +137,8 @@ def create_user():
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user_by_id(user_id):
     user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return error_response('User not found', 404)
     return success_response(user_to_dict(user))
 
 @app.route('/user/login/', methods=['POST'])
@@ -172,21 +180,142 @@ def spotify_login():
     db.session.commit()
     return jsonify({'message': 'Spotify login successful'})
 
+
+
+
+# ----------------- SPOTIFY -----------------
+
+
+
 @app.route('/user/profile', methods=['GET'])
 def user_profile():
     if not current_user.is_authenticated:
         return jsonify({'message': 'User not authenticated'}), 401
 
-    if current_user.spotify_token_expiry and current_user.spotify_token_expiry < datetime.datetime.now(datetime.timezone.utc):
-        if not refresh_spotify_token(current_user):
-            return jsonify({'message': 'Failed to refresh Spotify token'}), 401
+    spotify_profile = None
+    if current_user.spotify_logged_in:
+        # if current_user.spotify_token_expiry and current_user.spotify_token_expiry < datetime.datetime.now(datetime.timezone.utc):
+        #     # Token has expired, handle token refresh here
+        #     pass
+
+        headers = {
+            'Authorization': f'Bearer {current_user.spotify_token}'
+        }
+        response = requests.get('https://api.spotify.com/v1/me', headers=headers)
+        
+        if response.status_code == 200:
+            spotify_profile = response.json()
+        else:
+            current_user.spotify_logged_in = False
+            db.session.commit()
 
     user_data = {
         'username': current_user.username,
         'spotify_logged_in': current_user.spotify_logged_in,
-        'spotify_token': current_user.spotify_token
+        'spotify_profile': spotify_profile
     }
     return jsonify(user_data)
+
+
+
+
+
+
+
+@app.route('/user/spotify-token', methods=['POST'])
+def spotify_token():
+    if not current_user.is_authenticated:
+        return jsonify({'message': 'User not authenticated'}), 401
+
+    code = request.json.get('code')
+
+    print('code', code)
+
+    client_id = 'b5d98381070641b38c70deafcae79169'
+    client_secret = 'c6818fe6cb7d4f6ca9311f92609561bc'
+    redirect_uri = 'http://localhost:3000/callback'
+    token_url = 'https://accounts.spotify.com/api/token'
+
+    response = requests.post(token_url, data={
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret,
+    })
+
+    print('response', response)
+
+    if response.status_code == 200:
+        tokens = response.json()
+        current_user.spotify_token = tokens['access_token']
+        current_user.spotify_refresh_token = tokens['refresh_token']
+        current_user.spotify_token_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=tokens['expires_in'])
+        current_user.spotify_logged_in = True
+        db.session.commit()
+        return jsonify(tokens)
+    else:
+        return jsonify({'message': 'Failed to exchange authorization code'}), 400
+
+@app.route('/login-test', methods=['GET'])
+def login_test():
+    client_id = 'b5d98381070641b38c70deafcae79169'
+    redirect_uri = 'http://localhost:3000/callback'
+    state = generate_random_string(16)
+    scope = 'user-read-private user-read-email user-modify-playback-state user-read-playback-state streaming'
+
+    query_params = {
+        'response_type': 'code',
+        'client_id': client_id,
+        'scope': scope,
+        'redirect_uri': redirect_uri,
+        'state': state
+    }
+
+    auth_url = 'https://accounts.spotify.com/authorize?' + urllib.parse.urlencode(query_params)
+    return redirect(auth_url)
+
+@app.route('/callback', methods=['GET'])
+def callback():
+    code = request.args.get('code')
+    state = request.args.get('state')
+    client_id = 'b5d98381070641b38c70deafcae79169'
+    client_secret = 'c6818fe6cb7d4f6ca9311f92609561bc'
+    redirect_uri = 'http://localhost:3000/callback'
+    token_url = 'https://accounts.spotify.com/api/token'
+
+    response = requests.post(token_url, data={
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret,
+    })
+
+    if response.status_code == 200:
+        tokens = response.json()
+        current_user.spotify_token = tokens['access_token']
+        current_user.spotify_refresh_token = tokens['refresh_token']
+        current_user.spotify_token_expiry = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=tokens['expires_in'])
+        current_user.spotify_logged_in = True
+        db.session.commit()
+        return jsonify(tokens)
+    else:
+        return jsonify({'message': 'Failed to exchange authorization code'}), 400
+
+
+
+
+
+
+
+
+@app.route('/set-login-true/<int:pid>', methods=['POST'])
+def set_login_true(pid):
+    user = User.query.filter_by(id=pid).first()
+    user.spotify_logged_in = True
+    db.session.commit()
+    return jsonify({'message': 'Login set to true'})
 
 if __name__ == '__main__':
     app.run(debug=True)

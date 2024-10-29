@@ -22,8 +22,10 @@ const UserProfile = () => {
       if (response.ok) {
         const data = await response.json();
         setUsername(data.username);
+        if (data.spotify_logged_in) {
+          setProfile(data.spotify_profile);
+        }
       } else {
-        console.error('Error fetching user profile:', response.statusText);
         navigate('/login');
       }
     };
@@ -32,8 +34,7 @@ const UserProfile = () => {
   }, [navigate]);
 
   const handleSpotifyLogin = () => {
-    // Placeholder for Spotify login functionality
-    console.log('Spotify login button clicked');
+    navigate('/spotify-login');
   };
 
   const handleUpdateUsername = () => {

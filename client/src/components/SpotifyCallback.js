@@ -1,42 +1,54 @@
 // src/components/SpotifyCallback.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SpotifyCallback = () => {
+  const [accessToken, setAccessToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState('');
+  const [expiresIn, setExpiresIn] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const hash = window.location.hash;
-    const params = new URLSearchParams(hash.substring(1));
-    const accessToken = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    const expiresIn = params.get('expires_in');
+    const search = window.location.search;
+    console.log('Search:', search); // Log the search
+    const params = new URLSearchParams(search);
+    const code = params.get('code');
 
-    if (accessToken && refreshToken && expiresIn) {
-      fetch('/user/spotify-login', {
+    console.log('Authorization Code:', code); // Log the authorization code
+
+    if (code) {
+      fetch('/user/spotify-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken, expires_in: parseInt(expiresIn) }),
+        body: JSON.stringify({ code }),
       })
         .then(response => response.json())
-        .then(() => {
-          localStorage.setItem('spotifyAccessToken', accessToken);
-          localStorage.setItem('spotifyRefreshToken', refreshToken);
-          localStorage.setItem('spotifyTokenExpiry', Date.now() + parseInt(expiresIn) * 1000);
-          navigate('/profile');
+        .then(data => {
+          setAccessToken(data.access_token);
+          setRefreshToken(data.refresh_token);
+          setExpiresIn(data.expires_in);
+          navigate('/profile'); // Navigate to the profile component
         })
         .catch(error => {
-          console.error('Error logging in with Spotify:', error);
-          navigate('/login');
+          console.error('Error exchanging authorization code:', error);
+          navigate('/login'); // Navigate to login on error
         });
     } else {
-      navigate('/login');
+      console.error('Missing authorization code');
+      navigate('/login'); // Navigate to login if authorization code is missing
     }
   }, [navigate]);
 
-  return <div>Loading...</div>;
+  return (
+    <div>
+      <h1>Spotify Callback</h1>
+      <p><strong>Access Token:</strong> {accessToken}</p>
+      <p><strong>Refresh Token:</strong> {refreshToken}</p>
+      <p><strong>Expires In:</strong> {expiresIn} seconds</p>
+    </div>
+  );
 };
 
 export default SpotifyCallback;
