@@ -3,12 +3,13 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 import os
 import random
 import urllib.parse
-from db import init_db, add_user
-from db import db, User
+from db import init_db, add_user, start_game, add_player
+from db import db, User, Track, Game, Player
 import json
 import requests
 import datetime
 import string
+from datetime import timezone
 
 """
 Server for Guessify
@@ -91,6 +92,15 @@ def user_to_dict(user):
         'spotify_refresh_token': user.spotify_refresh_token,
         'spotify_token_expiry': user.spotify_token_expiry,
         'spotify_logged_in': user.spotify_logged_in
+    }
+
+def game_to_dict(game):
+    return {
+        'id': game.id,
+        'game_code': game.game_code,
+        'current_track_id': game.current_track_id,
+        'timestamp': game.timestamp,
+        'host': game.host
     }
 
 def refresh_spotify_token(user):
@@ -337,6 +347,74 @@ Next steps:
     6. Route to get songs uris from a specified public playlist
 """
 
+@app.route('/create-game', methods=['POST'])
+def create_game():
+    if not current_user.is_authenticated:
+        return error_response('User not logged in', 401)
+    
+    body = json.loads(request.data)
+
+    if 'playlist_uri' not in body:
+        return error_response('Missing playlist_uri', 400)
+
+    playlist_uri = body['playlist_uri']
+
+
+    # check if this is a valid playlist uri
+    headers = { 'Authorization': f'Bearer {current_user.spotify_token}' }
+    response = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_uri}', 
+                            headers=headers)
+    
+    if response.status_code != 200:
+        print(response.json())
+        return error_response('Invalid playlist uri', 400)
+
+    game_code = '-'.join(''.join(random.choices(string.digits, k=6)) for _ in range(1))
+
+    game = start_game(current_user.id, playlist_uri, game_code)
+
+    player = add_player(game.id, current_user.id, current_user.spotify_token)
+
+    return success_response(game_to_dict(game))
+
+@app.route('/get-game/<int:game_id>', methods=['GET'])
+def get_game(game_id):
+    game = Game.query.filter_by(id=game_id).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+    
+    players_in_game = game.players
+
+    return jsonify({'game': game_to_dict(game), 
+                    'players': [player.user_id for player in players_in_game]})
+
+@app.route('/join-game', methods=['POST'])
+def join_game():
+    if not current_user.is_authenticated:
+        return jsonify({'message': 'User not authenticated'}), 401
+
+    body = json.loads(request.data)
+
+    check_fields(body, ['game_code'])
+
+    game_code = body['game_code']
+    game = Game.query.filter_by(game_code=game_code).first()
+
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+
+    player = Player(game_id=game.id, user_id=current_user.id, 
+                    spotify_token=current_user.spotify_token)
+    db.session.add(player)
+    db.session.commit()
+
+    return success_response(game_to_dict(game))
+
+def update_player_score(player_id, score):
+    player = Player.query.filter_by(id=player_id).first()
+    player.score = score
+    db.session.commit()
+
 
 
 
@@ -349,6 +427,14 @@ def set_login_true(pid):
     user.spotify_logged_in = True
     db.session.commit()
     return jsonify({'message': 'Login set to true'})
+
+@app.route('/delete-all-games', methods=['DELETE'])
+def delete_all_games():
+    games = Game.query.all()
+    for game in games:
+        db.session.delete(game)
+    db.session.commit()
+    return jsonify({'message': 'All games deleted'})
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -27,7 +27,7 @@ const TopBar = ({ isLoggedIn, username }) => {
   };
 
   const userIcon = isLoggedIn ? (
-    <div className="user-initial">{username.charAt(0).toUpperCase()}</div>
+    <img src="/logo192.png" alt="User Icon" />
   ) : (
     <img src="/not_logged_in.png" alt="User Icon" />
   );
