@@ -10,6 +10,14 @@ import './css/MainPage.css';
  * Through the years (70s, 80s, 90s, 00s, 10s)
  * Genres (pop, rock, hip-hop, electronic, etc.)
  * Custom playlists
+ * 
+ * Maybe this page should have two sections:
+ * - One for the user to create a game
+ * - One for the user to join a game 
+ * These pages would then navigate to the HostGame and JoinGame pages respectively
+ * The host game can have options for quickstart games with popular playlists
+ * and the ability to click to see more playlists, this would then navigate to the 
+ * host game page
  */
 
 const MainPage = () => {
@@ -31,6 +39,11 @@ const MainPage = () => {
       uri: '37i9dQZF1DX4JAvHpjipBk',
       name: 'Viral Hits',
       image: '/viralhits2.jpeg'
+    },
+    {
+      uri: '37i9dQZF1DX4JAvHpjipBk',
+      name: 'Custom Game',
+      image: '/customgame.jpeg'
     }
   ]);
 
