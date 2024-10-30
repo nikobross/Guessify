@@ -199,7 +199,7 @@ def update_username():
 
 
 
-# ----------------- SPOTIFY -----------------
+# ----------------- SPOTIFY AUTHENTICATION -----------------
 
 
 
@@ -319,8 +319,23 @@ def callback():
         return jsonify({'message': 'Failed to exchange authorization code'}), 400
 
 
+# ----------------- GAMEPLAY -----------------
+
+@app.route('/get-access-token', methods=['GET'])
+def get_access_token():
+    if not current_user.is_authenticated:
+        return jsonify({'message': 'User not authenticated'}), 401
+    return jsonify({'access_token': current_user.spotify_token})
+
+"""
+Next steps:
+    1. Route to get songs uris from a specified public playlist
+"""
 
 
+
+
+# ----------------- TESTING -----------------
 
 
 @app.route('/set-login-true/<int:pid>', methods=['POST'])
