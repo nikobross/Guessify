@@ -410,10 +410,27 @@ def join_game():
 
     return success_response(game_to_dict(game))
 
-def update_player_score(player_id, score):
-    player = Player.query.filter_by(id=player_id).first()
-    player.score = score
+@app.route('/update-scores/', methods=['POST'])
+def update_player_score():
+    if not current_user.is_authenticated:
+        return jsonify({'message': 'User not authenticated'}), 401
+    
+    body = json.loads(request.data)
+
+    check_fields(body, ['game_id', 'score'])
+
+    game_id = body['game_id']
+    score_to_add = body['score']
+
+    player = Player.query.filter_by(game_id=game_id, user_id=current_user.id).first()
+    if not player:
+        return jsonify({'message': 'Player not found'}), 404
+    
+    player.score += score_to_add
+
     db.session.commit()
+
+    return success_response({'Score updated': player.score})
 
 
 

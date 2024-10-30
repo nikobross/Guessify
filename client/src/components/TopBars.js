@@ -65,6 +65,7 @@ const TopBar = ({ isLoggedIn, username }) => {
                 localStorage.removeItem('username');
                 navigate('/');
               }}>Sign Out</p>
+              <p>My Games</p>
             </>
           ) : (
             <>
