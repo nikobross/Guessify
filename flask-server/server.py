@@ -210,13 +210,21 @@ def user_profile():
 
     spotify_profile = None
     if current_user.spotify_logged_in:
-        # if current_user.spotify_token_expiry and current_user.spotify_token_expiry < datetime.datetime.now(datetime.timezone.utc):
-        #     # Token has expired, handle token refresh here
-        #     pass
+
+        if current_user.spotify_token_expiry and current_user.spotify_token_expiry.tzinfo is None:
+            current_user.spotify_token_expiry = current_user.spotify_token_expiry.replace(tzinfo=datetime.timezone.utc)
+
+        if current_user.spotify_token_expiry and current_user.spotify_token_expiry \
+                                                < datetime.datetime.now(datetime.timezone.utc):
+            if refresh_spotify_token(current_user):
+                return success_response('Spotify token refreshed')
+            else:
+                return error_response('Failed to refresh Spotify token')
 
         headers = {
             'Authorization': f'Bearer {current_user.spotify_token}'
         }
+        
         response = requests.get('https://api.spotify.com/v1/me', headers=headers)
 
         if response.status_code == 200:
