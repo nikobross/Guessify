@@ -329,7 +329,12 @@ def get_access_token():
 
 """
 Next steps:
-    1. Route to get songs uris from a specified public playlist
+    1. Instantiate game object
+    2. Work out the ability to start a game
+    3. Have players join through a game code
+    4. Make sure players scores can be updated
+    5. Leaderboard functionality
+    6. Route to get songs uris from a specified public playlist
 """
 
 

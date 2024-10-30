@@ -3,6 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from './TopBars';
 import './css/MainPage.css';
 
+/**
+ * Cards with pre-configured games from spotify as well
+ * as from the user's own public playlists, join game button
+ * should be able to join a game with or without audio (unnless 
+ * not logged in, then they can only join without audio)
+ * Last card should just have a plus and allow for creation
+ * of custom games (playlist uri, number of rounds, etc)
+ */
+
+
 const MainPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
