@@ -8,6 +8,7 @@ import SignUp from './components/SignUp';
 import SpotifyLogin from './components/SpotifyLogin';
 import SpotifyCallback from './components/SpotifyCallback';
 import UserProfile from './components/UserProfile';
+import MoreGames from './components/MoreGames'; // Ensure this import is correct
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/spotify-login" element={<SpotifyLogin />} />
         <Route path="/callback" element={<SpotifyCallback />} />
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="/more-games" element={<MoreGames />} />
       </Routes>
     </Router>
   );

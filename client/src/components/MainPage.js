@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from './TopBars';
 import Card from './Card';
 import './css/MainPage.css';
+import MoreGames from './MoreGames'; // Ensure this import is correct
+
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -46,10 +48,16 @@ const MainPage = () => {
     }
   ]);
 
-  const customGame = {
-    uri: '37i9dQZF1DX4JAvHpjipBk',
+  const seeGames = {
+    uri: 'URI not used',
     name: 'See More',
     image: '/seegames.jpeg'
+  };
+
+  const customGame = {
+    uri: '37i9dQZF1DX4JAvHpjipBk',
+    name: 'Custom Game',
+    image: '/customgame.jpeg'
   };
 
   useEffect(() => {
@@ -86,6 +94,10 @@ const MainPage = () => {
     }
   };
 
+  const seeMoreGames = async (playlistUri) => {  
+    navigate('/more-games', { state: { isLoggedIn, username } });
+  }
+
   return (
     <div>
       <TopBar isLoggedIn={isLoggedIn} username={username} />
@@ -103,21 +115,29 @@ const MainPage = () => {
               />
             ))}
             <Card
-              key={`${customGame.uri}-custom`} // Ensure unique key for custom game
-              playlistUri={customGame.uri}
-              playlistName={customGame.name}
-              image={customGame.image}
-              onCreateGame={createGame}
+              key={`${seeGames.uri}`} // Ensure unique key for custom game
+              playlistUri={seeGames.uri}
+              playlistName={seeGames.name}
+              image={seeGames.image}
+              onCreateGame={seeMoreGames}
               tooltip="Click to see more!"
             />
           </div>
         </div>
         <div className="right-sections">
           <div className="top-right-section">
-            {/* Content for the top section */}
+          <h2 className='cards-container-text'>Join an ongoing game</h2>
+          <button className="custom-button" onClick={() => navigate('/join-game')}>Join a game</button>
           </div>
           <div className="bottom-right-section">
-            {/* Content for the bottom section */}
+            <h2 className='cards-container-text'>Create Custom Game</h2>
+            <Card
+              key={`${customGame.uri}-custom`} // Ensure unique key for custom game
+              playlistUri={customGame.uri}
+              playlistName={customGame.name}
+              image={customGame.image}
+              onCreateGame={createGame}
+            />
           </div>
         </div>
       </div>
