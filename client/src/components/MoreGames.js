@@ -5,7 +5,7 @@ import './css/MoreGames.css';
 
 const MoreGames = ({ isLoggedIn, username }) => {
 
-    const [topGames, setTopGames] = useState([
+    const [topGames] = useState([
         {
           uri: '37i9dQZF1DXcBWIGoYBM5M',
           name: 'Top 50 - USA',
@@ -38,7 +38,7 @@ const MoreGames = ({ isLoggedIn, username }) => {
         }
       ]);
 
-    const [throughTheYears, setThroughTheYears] = useState([
+    const [throughTheYears] = useState([
     {
         uri: '37i9dQZF1DXcBWIGoYBM5M',
         name: 'All out 2010s',
@@ -71,7 +71,7 @@ const MoreGames = ({ isLoggedIn, username }) => {
     }
     ]);
     
-    const [genreGames, setGenreGames] = useState([
+    const [genreGames] = useState([
         {
             uri: '37i9dQZF1DXcBWIGoYBM5M',
             name: 'Rap Caviar',

@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import TopBar from './TopBars';
 import Card from './Card';
 import './css/MainPage.css';
-import MoreGames from './MoreGames'; // Ensure this import is correct
 
 const MainPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
-  const [playlists, setPlaylists] = useState([
+  const [playlists] = useState([
     {
       uri: '37i9dQZF1DXcBWIGoYBM5M',
       name: 'Top 50 - USA',
