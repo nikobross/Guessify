@@ -88,14 +88,14 @@ const MainPage = () => {
 
   return (
     <div>
-      <TopBar username={username} />
+      <TopBar isLoggedIn={isLoggedIn} username={username} />
       <div className="main-page-content">
         <div className="left-section">
           <h2 className='cards-container-text'>Popular Now</h2>
           <div className="cards-container">
-            {playlists.map((playlist) => (
+            {playlists.map((playlist, index) => (
               <Card
-                key={playlist.uri}
+                key={`${playlist.uri}-${index}`} // Ensure unique keys
                 playlistUri={playlist.uri}
                 playlistName={playlist.name}
                 image={playlist.image}
@@ -103,6 +103,7 @@ const MainPage = () => {
               />
             ))}
             <Card
+              key={`${customGame.uri}-custom`} // Ensure unique key for custom game
               playlistUri={customGame.uri}
               playlistName={customGame.name}
               image={customGame.image}
@@ -111,8 +112,13 @@ const MainPage = () => {
             />
           </div>
         </div>
-        <div className="right-section">
-          {/* This section is blank for now */}
+        <div className="right-sections">
+          <div className="top-right-section">
+            {/* Content for the top section */}
+          </div>
+          <div className="bottom-right-section">
+            {/* Content for the bottom section */}
+          </div>
         </div>
       </div>
     </div>

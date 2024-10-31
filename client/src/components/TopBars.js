@@ -1,6 +1,6 @@
 // src/components/TopBar.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './css/TopBar.css';
 import './css/Sidebar.css';
 import './css/Hamburger.css';
@@ -10,6 +10,7 @@ import './css/Logos.css';
 
 const TopBar = ({ isLoggedIn, username }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [rightSidebarVisible, setRightSidebarVisible] = useState(false);
 
@@ -24,6 +25,16 @@ const TopBar = ({ isLoggedIn, username }) => {
   const closeSidebars = () => {
     setSidebarVisible(false);
     setRightSidebarVisible(false);
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('username');
+    if (location.pathname === '/') {
+      window.location.reload();
+    } else {
+      navigate('/');
+    }
   };
 
   const userIcon = isLoggedIn ? (
@@ -60,12 +71,8 @@ const TopBar = ({ isLoggedIn, username }) => {
           {isLoggedIn ? (
             <>
               <p onClick={() => navigate('/profile')}>Profile</p>
-              <p onClick={() => {
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('username');
-                navigate('/');
-              }}>Sign Out</p>
               <p>My Games</p>
+              <p onClick={handleSignOut}>Sign Out</p>
             </>
           ) : (
             <>
