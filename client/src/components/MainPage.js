@@ -13,37 +13,37 @@ const MainPage = () => {
     {
       uri: '37i9dQZF1DXcBWIGoYBM5M',
       name: 'Top 50 - USA',
-      image: '/top50global.jpeg'
+      image: '/popular/top50us.jpeg'
+    },
+    {
+      uri: '37i9dQZF1DX4JAvHpjipBk',
+      name: 'New Music Friday',
+      image: '/popular/newmusicfriday.jpeg'
+    },
+    {
+      uri: '37i9dQZF1DX4JAvHpjipBk',
+      name: 'Viral Hits',
+      image: '/popular/viralhits.jpeg'
+    },
+    {
+      uri: '37i9dQZF1DX4JAvHpjipBk',
+      name: 'All out 1960s',
+      image: '/allout/allout1960s.jpeg'
+    },
+    {
+      uri: '37i9dQZF1DX4JAvHpjipBk',
+      name: 'All out 1980s',
+      image: '/allout/allout1980s.jpeg'
     },
     {
       uri: '37i9dQZF1DXcBWIGoYBM5M',
-      name: 'Top 50 - Global',
-      image: '/top50us.jpeg'
+      name: 'Pop Right Now',
+      image: '/genres/poprightnow.jpeg'
     },
     {
       uri: '37i9dQZF1DX4JAvHpjipBk',
-      name: 'Viral Hits',
-      image: '/viralhits2.jpeg'
-    },
-    {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
-      name: 'Viral Hits',
-      image: '/viralhits2.jpeg'
-    },
-    {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
-      name: 'Viral Hits',
-      image: '/viralhits2.jpeg'
-    },
-    {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
-      name: 'Viral Hits',
-      image: '/viralhits2.jpeg'
-    },
-    {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
-      name: 'Create Custom Game',
-      image: '/customgame.jpeg'
+      name: 'Viva Latino',
+      image: '/genres/vivalatino.jpeg'
     }
   ]);
 
@@ -125,8 +125,7 @@ const MainPage = () => {
         </div>
         <div className="right-sections">
           <div className="top-right-section">
-          <h2 className='cards-container-text'>Join a Game</h2>
-          <button className="custom-button" onClick={() => navigate('/join-game')}>Join</button>
+          <button className="big-custom-button" onClick={() => navigate('/join-game')}>Join a Game</button>
           </div>
           <div className="bottom-right-section">
             <h2 className='cards-container-text'>Custom Game</h2>

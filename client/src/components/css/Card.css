@@ -5,8 +5,8 @@
     box-shadow: 0 4px 8px #212121;
     margin: 10px;
     padding: 20px;
-    width: 160px;
-    height: 160px;
+    width: 178px;
+    height: 178px;
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s;
@@ -17,18 +17,10 @@
     transform: scale(1.05);
   }
 
-  .card-image {
-    width: 160%;
-    height: 160%;
-    margin: -30% -30%;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .card-image-through-years {
-    width: 142%;
-    height: 140%;
-    margin: -15% -28.6%;
+  .card-image-perfect-center {
+    width: 128%;
+    height: 128%;
+    margin: -14% -14%;
     background-size: cover;
     background-position: center;
   }

@@ -9,32 +9,32 @@ const MoreGames = ({ isLoggedIn, username }) => {
         {
           uri: '37i9dQZF1DXcBWIGoYBM5M',
           name: 'Top 50 - USA',
-          image: '/top50global.jpeg'
+          image: '/popular/top50global.jpeg'
         },
         {
           uri: '37i9dQZF1DXcBWIGoYBM5M',
           name: 'Top 50 - Global',
-          image: '/top50us.jpeg'
+          image: '/popular/top50us.jpeg'
         },
         {
           uri: '37i9dQZF1DX4JAvHpjipBk',
           name: 'Viral Hits',
-          image: '/viralhits2.jpeg'
+          image: '/popular/viralhits.jpeg'
         },
         {
           uri: '37i9dQZF1DX4JAvHpjipBk',
-          name: 'New Music Friday?',
-          image: '/viralhits2.jpeg'
+          name: 'New Music Friday',
+          image: '/popular/newmusicfriday.jpeg'
+        },
+        {
+          uri: '37i9dQZF1DX4JAvHpjipBk',
+          name: 'Most Streamed',
+          image: '/popular/moststreamed.jpeg'
         },
         {
           uri: '37i9dQZF1DX4JAvHpjipBk',
           name: 'Viral Hits',
-          image: '/viralhits2.jpeg'
-        },
-        {
-          uri: '37i9dQZF1DX4JAvHpjipBk',
-          name: 'Viral Hits',
-          image: '/viralhits2.jpeg'
+          image: '/popular/viralhits.jpeg'
         }
       ]);
 
@@ -128,7 +128,6 @@ const MoreGames = ({ isLoggedIn, username }) => {
                   playlistName={card.name}
                   image={card.image}
                   onCreateGame={() => {}}
-                  imageClass='card-image-through-years'
                 />
               ))}
             </div>

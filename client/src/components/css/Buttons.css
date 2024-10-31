@@ -21,3 +21,25 @@
       top: 15px;
       right: 30px;
   }
+
+  .big-custom-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 32px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 24px;
+    cursor: pointer;
+    width: 380px;
+    height: 140px;
+    font-size: 40px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    transition: transform 0.2s;
+  }
+
+  .big-custom-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }

@@ -17,13 +17,13 @@ html, body {
   padding: 20px;
   margin: 10px;
   box-shadow: 0 4px 8px #212121;
-  flex: 2.5;
+  flex: 2.05;
 }
 
 .right-sections {
   display: flex;
   flex-direction: column;
-  flex: .5;
+  flex: .95;
 }
 
 .top-right-section, .bottom-right-section {

@@ -1,7 +1,7 @@
 import React from 'react';
 import './css/Card.css';
 
-const Card = ({ playlistUri, playlistName, image, onCreateGame, tooltip, imageClass = 'card-image' }) => {
+const Card = ({ playlistUri, playlistName, image, onCreateGame, tooltip, imageClass = 'card-image-perfect-center' }) => {
   return (
     <div className="card" onClick={() => onCreateGame(playlistUri)}>
       <div className={`${imageClass}`} style={{ backgroundImage: `url(${image})` }}></div>
