@@ -23,7 +23,7 @@ const MoreGames = ({ isLoggedIn, username }) => {
         },
         {
           uri: '37i9dQZF1DX4JAvHpjipBk',
-          name: 'Viral Hits',
+          name: 'New Music Friday?',
           image: '/viralhits2.jpeg'
         },
         {
@@ -38,6 +38,71 @@ const MoreGames = ({ isLoggedIn, username }) => {
         }
       ]);
 
+    const [throughTheYears, setThroughTheYears] = useState([
+    {
+        uri: '37i9dQZF1DXcBWIGoYBM5M',
+        name: 'All out 2010s',
+        image: '/allout/allout2010s.jpeg'
+    },
+    {
+        uri: '37i9dQZF1DXcBWIGoYBM5M',
+        name: 'All out 2000s',
+        image: '/allout/allout2000s.jpeg'
+    },
+    {
+        uri: '37i9dQZF1DX4JAvHpjipBk',
+        name: 'All out 1990s',
+        image: '/allout/allout1990s.jpeg'
+    },
+    {
+        uri: '37i9dQZF1DX4JAvHpjipBk',
+        name: 'All out 1980s',
+        image: '/allout/allout1980s.jpeg'
+    },
+    {
+        uri: '37i9dQZF1DX4JAvHpjipBk',
+        name: 'All out 1970s',
+        image: '/allout/allout1970s.jpeg'
+    },
+    {
+        uri: '37i9dQZF1DX4JAvHpjipBk',
+        name: 'All out 1960s',
+        image: '/allout/allout1960s.jpeg'
+    }
+    ]);
+    
+    const [genreGames, setGenreGames] = useState([
+        {
+            uri: '37i9dQZF1DXcBWIGoYBM5M',
+            name: 'Rap Caviar',
+            image: '/genres/rapcaviar.jpeg'
+        },
+        {
+            uri: '37i9dQZF1DXcBWIGoYBM5M',
+            name: 'Top 50 - Global',
+            image: '/top50us.jpeg'
+        },
+        {
+            uri: '37i9dQZF1DX4JAvHpjipBk',
+            name: 'Viral Hits',
+            image: '/viralhits2.jpeg'
+        },
+        {
+            uri: '37i9dQZF1DX4JAvHpjipBk',
+            name: 'Viral Hits',
+            image: '/viralhits2.jpeg'
+        },
+        {
+            uri: '37i9dQZF1DX4JAvHpjipBk',
+            name: 'Viral Hits',
+            image: '/viralhits2.jpeg'
+        },
+        {
+            uri: '37i9dQZF1DX4JAvHpjipBk',
+            name: 'Viral Hits',
+            image: '/viralhits2.jpeg'
+        }
+        ]);
 
 
       return (
@@ -56,18 +121,19 @@ const MoreGames = ({ isLoggedIn, username }) => {
               ))}
             </div>
             <div className="section">
-              {topGames.map((card, index) => (
+              {throughTheYears.map((card, index) => (
                 <Card
                   key={`${card.uri}-${index}-section2`}
                   playlistUri={card.uri}
                   playlistName={card.name}
                   image={card.image}
                   onCreateGame={() => {}}
+                  imageClass='card-image-through-years'
                 />
               ))}
             </div>
             <div className="section">
-              {topGames.map((card, index) => (
+              {genreGames.map((card, index) => (
                 <Card
                   key={`${card.uri}-${index}-section3`}
                   playlistUri={card.uri}

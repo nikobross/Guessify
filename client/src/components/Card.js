@@ -1,10 +1,10 @@
 import React from 'react';
 import './css/Card.css';
 
-const Card = ({ playlistUri, playlistName, image, onCreateGame, tooltip }) => {
+const Card = ({ playlistUri, playlistName, image, onCreateGame, tooltip, imageClass = 'card-image' }) => {
   return (
     <div className="card" onClick={() => onCreateGame(playlistUri)}>
-      <div className="card-image" style={{ backgroundImage: `url(${image})` }}></div>
+      <div className={`${imageClass}`} style={{ backgroundImage: `url(${image})` }}></div>
       {tooltip && (
         <div className="tooltip">
           <span className="tooltip-icon">?</span>

@@ -6,7 +6,7 @@
     margin: 10px;
     padding: 20px;
     width: 160px;
-    height: 200px;
+    height: 160px;
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s;
@@ -18,9 +18,17 @@
   }
 
   .card-image {
-    width: 140%;
+    width: 160%;
+    height: 160%;
+    margin: -30% -30%;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .card-image-through-years {
+    width: 142%;
     height: 140%;
-    margin: -30% -20%;
+    margin: -15% -28.6%;
     background-size: cover;
     background-position: center;
   }
