@@ -8,6 +8,8 @@
     top: 0;
     left: 0;
     z-index: 1000;
-    outline: 2px solid #888; /* Add a thin outline */
+    /* outline: 2px solid #888; */
+    box-shadow: 0 4px 8px #212121;
     box-sizing: border-box;
+    border-radius: 0 0 8px 8px;
   }

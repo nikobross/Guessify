@@ -29,6 +29,10 @@ const HostGame = () => {
     }
   };
 
+
+
+  
+
   return (
     <div className="host-game-container">
       <h1>Host Game Page</h1>

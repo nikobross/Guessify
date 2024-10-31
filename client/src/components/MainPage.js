@@ -4,22 +4,6 @@ import TopBar from './TopBars';
 import Card from './Card';
 import './css/MainPage.css';
 
-/**
- * Packs of games
- * Top hits
- * Through the years (70s, 80s, 90s, 00s, 10s)
- * Genres (pop, rock, hip-hop, electronic, etc.)
- * Custom playlists
- * 
- * Maybe this page should have two sections:
- * - One for the user to create a game
- * - One for the user to join a game 
- * These pages would then navigate to the HostGame and JoinGame pages respectively
- * The host game can have options for quickstart games with popular playlists
- * and the ability to click to see more playlists, this would then navigate to the 
- * host game page
- */
-
 const MainPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -42,10 +26,31 @@ const MainPage = () => {
     },
     {
       uri: '37i9dQZF1DX4JAvHpjipBk',
-      name: 'Custom Game',
+      name: 'Viral Hits',
+      image: '/viralhits2.jpeg'
+    },
+    {
+      uri: '37i9dQZF1DX4JAvHpjipBk',
+      name: 'Viral Hits',
+      image: '/viralhits2.jpeg'
+    },
+    {
+      uri: '37i9dQZF1DX4JAvHpjipBk',
+      name: 'Viral Hits',
+      image: '/viralhits2.jpeg'
+    },
+    {
+      uri: '37i9dQZF1DX4JAvHpjipBk',
+      name: 'Create Custom Game',
       image: '/customgame.jpeg'
     }
   ]);
+
+  const customGame = {
+    uri: '37i9dQZF1DX4JAvHpjipBk',
+    name: 'See More',
+    image: '/seegames.jpeg'
+  };
 
   useEffect(() => {
     // Check if the user is logged in by checking localStorage
@@ -84,16 +89,31 @@ const MainPage = () => {
   return (
     <div>
       <TopBar username={username} />
-      <div className="main-page-container">
-        {playlists.map((playlist) => (
-          <Card
-            key={playlist.uri}
-            playlistUri={playlist.uri}
-            playlistName={playlist.name}
-            image={playlist.image}
-            onCreateGame={createGame}
-          />
-        ))}
+      <div className="main-page-content">
+        <div className="left-section">
+          <h2 className='cards-container-text'>Popular Now</h2>
+          <div className="cards-container">
+            {playlists.map((playlist) => (
+              <Card
+                key={playlist.uri}
+                playlistUri={playlist.uri}
+                playlistName={playlist.name}
+                image={playlist.image}
+                onCreateGame={createGame}
+              />
+            ))}
+            <Card
+              playlistUri={customGame.uri}
+              playlistName={customGame.name}
+              image={customGame.image}
+              onCreateGame={createGame}
+              tooltip="Click to see more!"
+            />
+          </div>
+        </div>
+        <div className="right-section">
+          {/* This section is blank for now */}
+        </div>
       </div>
     </div>
   );
