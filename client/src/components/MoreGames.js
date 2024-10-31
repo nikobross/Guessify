@@ -79,28 +79,28 @@ const MoreGames = ({ isLoggedIn, username }) => {
         },
         {
             uri: '37i9dQZF1DXcBWIGoYBM5M',
-            name: 'Top 50 - Global',
-            image: '/top50us.jpeg'
+            name: 'Pop Right Now',
+            image: '/genres/poprightnow.jpeg'
         },
         {
             uri: '37i9dQZF1DX4JAvHpjipBk',
-            name: 'Viral Hits',
-            image: '/viralhits2.jpeg'
+            name: 'Hot Country',
+            image: '/genres/hotcountry.jpeg'
         },
         {
             uri: '37i9dQZF1DX4JAvHpjipBk',
-            name: 'Viral Hits',
-            image: '/viralhits2.jpeg'
+            name: 'Viva Latino',
+            image: '/genres/vivalatino.jpeg'
         },
         {
             uri: '37i9dQZF1DX4JAvHpjipBk',
-            name: 'Viral Hits',
-            image: '/viralhits2.jpeg'
+            name: 'Rock Classics',
+            image: '/genres/rockclassics.jpeg'
         },
         {
             uri: '37i9dQZF1DX4JAvHpjipBk',
-            name: 'Viral Hits',
-            image: '/viralhits2.jpeg'
+            name: 'All New Dance',
+            image: '/genres/allnewdance.jpeg'
         }
         ]);
 

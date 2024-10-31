@@ -5,7 +5,6 @@ import Card from './Card';
 import './css/MainPage.css';
 import MoreGames from './MoreGames'; // Ensure this import is correct
 
-
 const MainPage = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
