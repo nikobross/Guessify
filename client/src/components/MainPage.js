@@ -125,11 +125,11 @@ const MainPage = () => {
         </div>
         <div className="right-sections">
           <div className="top-right-section">
-          <h2 className='cards-container-text'>Join an ongoing game</h2>
-          <button className="custom-button" onClick={() => navigate('/join-game')}>Join a game</button>
+          <h2 className='cards-container-text'>Join a Game</h2>
+          <button className="custom-button" onClick={() => navigate('/join-game')}>Join</button>
           </div>
           <div className="bottom-right-section">
-            <h2 className='cards-container-text'>Create Custom Game</h2>
+            <h2 className='cards-container-text'>Custom Game</h2>
             <Card
               key={`${customGame.uri}-custom`} // Ensure unique key for custom game
               playlistUri={customGame.uri}
