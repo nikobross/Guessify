@@ -116,7 +116,6 @@ const MoreGames = ({ isLoggedIn, username }) => {
                   playlistUri={card.uri}
                   playlistName={card.name}
                   image={card.image}
-                  onCreateGame={() => {}}
                 />
               ))}
             </div>
@@ -127,7 +126,6 @@ const MoreGames = ({ isLoggedIn, username }) => {
                   playlistUri={card.uri}
                   playlistName={card.name}
                   image={card.image}
-                  onCreateGame={() => {}}
                 />
               ))}
             </div>
@@ -138,7 +136,6 @@ const MoreGames = ({ isLoggedIn, username }) => {
                   playlistUri={card.uri}
                   playlistName={card.name}
                   image={card.image}
-                  onCreateGame={() => {}}
                 />
               ))}
             </div>

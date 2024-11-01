@@ -68,31 +68,7 @@ const MainPage = () => {
     }
   }, []);
 
-  const createGame = async (playlistUri) => {
-    try {
-      const response = await fetch('/create-game', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ playlist_uri: playlistUri }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(`Game created! Game Code: ${data.game_code}`);
-        navigate(`/game/${data.game_id}`);
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.error}`);
-      }
-    } catch (error) {
-      console.error('Error creating game:', error);
-      alert('Error creating game');
-    }
-  };
-
-  const seeMoreGames = async (playlistUri) => {  
+  const seeMoreGames = async () => {  
     navigate('/more-games', { state: { isLoggedIn, username } });
   }
 
@@ -109,7 +85,6 @@ const MainPage = () => {
                 playlistUri={playlist.uri}
                 playlistName={playlist.name}
                 image={playlist.image}
-                onCreateGame={createGame}
               />
             ))}
             <Card
@@ -117,7 +92,7 @@ const MainPage = () => {
               playlistUri={seeGames.uri}
               playlistName={seeGames.name}
               image={seeGames.image}
-              onCreateGame={seeMoreGames}
+              onClick={seeMoreGames}
               tooltip="Click to see more!"
             />
           </div>
@@ -133,7 +108,6 @@ const MainPage = () => {
               playlistUri={customGame.uri}
               playlistName={customGame.name}
               image={customGame.image}
-              onCreateGame={createGame}
             />
           </div>
         </div>

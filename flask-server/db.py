@@ -68,6 +68,7 @@ class Player(db.Model):
     current_guess_artist = db.Column(db.String(100), nullable=True)
     current_guess_track = db.Column(db.String(100), nullable=True)
     spotify_token = db.Column(db.String(500), nullable=True, default=None)
+    name = db.Column(db.String(100), nullable=True, default=None)
 
     game = db.relationship('Game', backref=db.backref('players', lazy=True))
     user = db.relationship('User', backref=db.backref('players', lazy=True))

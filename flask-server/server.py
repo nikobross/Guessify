@@ -352,13 +352,15 @@ def create_game():
     if not current_user.is_authenticated:
         return error_response('User not logged in', 401)
     
+    if not current_user.spotify_logged_in:
+        return error_response('User not logged in to Spotify', 403)
+
     body = json.loads(request.data)
 
     if 'playlist_uri' not in body:
         return error_response('Missing playlist_uri', 400)
 
     playlist_uri = body['playlist_uri']
-
 
     # check if this is a valid playlist uri
     headers = { 'Authorization': f'Bearer {current_user.spotify_token}' }
@@ -375,7 +377,10 @@ def create_game():
 
     player = add_player(game.id, current_user.id, current_user.spotify_token)
 
+    db.session.commit()
+
     return success_response(game_to_dict(game))
+
 
 @app.route('/get-game/<int:game_id>', methods=['GET'])
 def get_game(game_id):
@@ -390,8 +395,6 @@ def get_game(game_id):
 
 @app.route('/join-game', methods=['POST'])
 def join_game():
-    if not current_user.is_authenticated:
-        return jsonify({'message': 'User not authenticated'}), 401
 
     body = json.loads(request.data)
 
@@ -402,9 +405,14 @@ def join_game():
 
     if not game:
         return jsonify({'message': 'Game not found'}), 404
+    
+    if current_user.spotify_logged_in:
+        player = Player(game_id=game.id, user_id=current_user.id, 
+                        spotify_token=current_user.spotify_token)
+            
+    else:
+        player = Player(game_id=game.id, user_id=current_user.id)
 
-    player = Player(game_id=game.id, user_id=current_user.id, 
-                    spotify_token=current_user.spotify_token)
     db.session.add(player)
     db.session.commit()
 
@@ -432,8 +440,15 @@ def update_player_score():
 
     return success_response({'Score updated': player.score})
 
+@app.route('/get-players-in-game/<int:game_code>', methods=['GET'])
+def get_playes_in_game(game_code):
+    game = Game.query.filter_by(game_code=game_code).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+    
+    players_in_game = game.players
 
-
+    return jsonify({'players': players_in_game})
 
 # ----------------- TESTING -----------------
 
