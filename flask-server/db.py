@@ -93,8 +93,8 @@ def start_game(host, playlist_uri, game_code):
     db.session.commit()
     return new_game
 
-def add_player(game_id, user_id, spotify_token):
-    new_player = Player(game_id=game_id, user_id=user_id, spotify_token=spotify_token)
+def add_player(game_id, user_id, spotify_token, name):
+    new_player = Player(game_id=game_id, user_id=user_id, spotify_token=spotify_token, name=name)
     db.session.add(new_player)
     db.session.commit()
     return new_player

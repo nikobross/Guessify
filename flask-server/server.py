@@ -367,19 +367,21 @@ def create_game():
     response = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_uri}', 
                             headers=headers)
     
+    print(response.json())
+
     if response.status_code != 200:
         print(response.json())
         return error_response('Invalid playlist uri', 400)
 
-    game_code = '-'.join(''.join(random.choices(string.digits, k=6)) for _ in range(1))
+    game_code = '-'.join(''.join(random.choices(string.digits[1:], k=1) + random.choices(string.digits, k=5)) for _ in range(1))
 
     game = start_game(current_user.id, playlist_uri, game_code)
 
-    player = add_player(game.id, current_user.id, current_user.spotify_token)
+    player = add_player(game.id, current_user.id, current_user.spotify_token, current_user.username)
 
     db.session.commit()
 
-    return success_response(game_to_dict(game))
+    return jsonify(game_to_dict(game))
 
 
 @app.route('/get-game/<int:game_id>', methods=['GET'])
@@ -444,11 +446,14 @@ def update_player_score():
 def get_playes_in_game(game_code):
     game = Game.query.filter_by(game_code=game_code).first()
     if not game:
+        print('Game not found', game_code)
         return jsonify({'message': 'Game not found'}), 404
     
-    players_in_game = game.players
+    players = game.players
 
-    return jsonify({'players': players_in_game})
+    players_dict = [{'user_id': player.user_id, 'score': player.score, 'username': player.name} for player in players]
+
+    return jsonify({'players': players_dict})
 
 # ----------------- TESTING -----------------
 

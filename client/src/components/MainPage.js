@@ -10,7 +10,7 @@ const MainPage = () => {
   const [username, setUsername] = useState('');
   const [playlists] = useState([
     {
-      uri: '37i9dQZF1DXcBWIGoYBM5M',
+      uri: '37i9dQZEVXbLRQDuF5jeBp',
       name: 'Top 50 - USA',
       image: '/popular/top50us.jpeg'
     },

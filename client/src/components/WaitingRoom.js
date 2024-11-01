@@ -1,15 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import TopBar from './TopBars';
 import './css/WaitingRoom.css';
 
-const WaitingRoom = ({ isLoggedIn, username, gameCode }) => {
+const WaitingRoom = () => {
+  const location = useLocation();
+  const { gameCode } = location.state || {};
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
   const [players, setPlayers] = useState([]);
 
   useEffect(() => {
+    // Check if the user is logged in by checking localStorage
+    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const storedUsername = localStorage.getItem('username');
+    setIsLoggedIn(loggedIn);
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+
     if (gameCode) {
       fetch(`/get-players-in-game/${gameCode}`)
         .then(response => response.json())
         .then(data => {
+            console.log('Players:', data);
           if (data.players) {
             setPlayers(data.players);
           }
