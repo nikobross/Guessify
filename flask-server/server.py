@@ -366,11 +366,9 @@ def create_game():
     headers = { 'Authorization': f'Bearer {current_user.spotify_token}' }
     response = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_uri}', 
                             headers=headers)
-    
-    print(response.json())
+
 
     if response.status_code != 200:
-        print(response.json())
         return error_response('Invalid playlist uri', 400)
 
     game_code = '-'.join(''.join(random.choices(string.digits[1:], k=1) + random.choices(string.digits, k=5)) for _ in range(1))
@@ -410,10 +408,10 @@ def join_game():
     
     if current_user.spotify_logged_in:
         player = Player(game_id=game.id, user_id=current_user.id, 
-                        spotify_token=current_user.spotify_token)
+                        spotify_token=current_user.spotify_token, name=current_user.username)
             
     else:
-        player = Player(game_id=game.id, user_id=current_user.id)
+        player = Player(game_id=game.id, user_id=current_user.id, name=current_user.username)
 
     db.session.add(player)
     db.session.commit()
@@ -446,7 +444,6 @@ def update_player_score():
 def get_playes_in_game(game_code):
     game = Game.query.filter_by(game_code=game_code).first()
     if not game:
-        print('Game not found', game_code)
         return jsonify({'message': 'Game not found'}), 404
     
     players = game.players

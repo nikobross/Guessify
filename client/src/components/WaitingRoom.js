@@ -19,17 +19,26 @@ const WaitingRoom = () => {
       setUsername(storedUsername);
     }
 
-    if (gameCode) {
-      fetch(`/get-players-in-game/${gameCode}`)
-        .then(response => response.json())
-        .then(data => {
+    const fetchPlayers = () => {
+      if (gameCode) {
+        fetch(`/get-players-in-game/${gameCode}`)
+          .then(response => response.json())
+          .then(data => {
             console.log('Players:', data);
-          if (data.players) {
-            setPlayers(data.players);
-          }
-        })
-        .catch(error => console.error('Error fetching players:', error));
-    }
+            if (data.players) {
+              setPlayers(data.players);
+            }
+          })
+          .catch(error => console.error('Error fetching players:', error));
+      }
+    };
+
+    // Fetch players immediately and then periodically
+    fetchPlayers();
+    const intervalId = setInterval(fetchPlayers, 5000); // Fetch players every 5 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [gameCode]);
 
   return (

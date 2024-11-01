@@ -19,7 +19,7 @@ const JoinGame = ({ isLoggedIn, username }) => {
       });
 
       if (response.ok) {
-        navigate('/waiting-room');
+        navigate('/waiting-room', { state: { gameCode: gameCode } });
       } else {
         setErrorMessage('Game could not be found');
       }
