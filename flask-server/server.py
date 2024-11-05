@@ -10,6 +10,7 @@ import requests
 import datetime
 import string
 from datetime import timezone
+from dotenv import load_dotenv
 
 """
 Server for Guessify
@@ -50,6 +51,11 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 init_db(app)
+
+load_dotenv()
+
+client_id = os.getenv('CLIENT_ID')
+client_secret = os.getenv('CLIENT_SECRET')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -105,8 +111,6 @@ def game_to_dict(game):
 
 def refresh_spotify_token(user):
     refresh_token = user.spotify_refresh_token
-    client_id = 'b5d98381070641b38c70deafcae79169'
-    client_secret = 'c6818fe6cb7d4f6ca9311f92609561bc'
     token_url = 'https://accounts.spotify.com/api/token'
 
     response = requests.post(token_url, data={
@@ -258,8 +262,6 @@ def spotify_token():
 
     code = request.json.get('code')
 
-    client_id = 'b5d98381070641b38c70deafcae79169'
-    client_secret = 'c6818fe6cb7d4f6ca9311f92609561bc'
     redirect_uri = 'http://localhost:3000/callback'
     token_url = 'https://accounts.spotify.com/api/token'
 
@@ -284,7 +286,6 @@ def spotify_token():
 
 @app.route('/login-test', methods=['GET'])
 def login_test():
-    client_id = 'b5d98381070641b38c70deafcae79169'
     redirect_uri = 'http://localhost:3000/callback'
     state = generate_random_string(16)
     scope = 'user-read-private user-read-email user-modify-playback-state user-read-playback-state streaming'
@@ -304,8 +305,6 @@ def login_test():
 def callback():
     code = request.args.get('code')
     state = request.args.get('state')
-    client_id = 'b5d98381070641b38c70deafcae79169'
-    client_secret = 'c6818fe6cb7d4f6ca9311f92609561bc'
     redirect_uri = 'http://localhost:3000/callback'
     token_url = 'https://accounts.spotify.com/api/token'
 
