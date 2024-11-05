@@ -57,8 +57,16 @@ class Game(db.Model):
     playlist_uri = db.Column(db.String(100), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
     host = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    gamestate = db.Column(db.String(50), nullable=False, default='waiting')
 
     current_track = db.relationship('Track', backref=db.backref('games', lazy=True))
+
+    def set_gamestate(self, state):
+        self.gamestate = state
+        db.session.commit()
+
+    def get_gamestate(self):
+        return self.gamestate
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)

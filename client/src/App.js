@@ -11,6 +11,7 @@ import UserProfile from './components/UserProfile';
 import MoreGames from './components/MoreGames'; // Ensure this import is correct
 import PlaySong from './components/PlaySong';
 import WaitingRoom from './components/WaitingRoom';
+import HostWaitingRoom from './components/HostWaitingRoom';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/more-games" element={<MoreGames />} />
         <Route path="/play" element={<PlaySong />} />
         <Route path="/waiting-room" element={<WaitingRoom />} />
+        <Route path="/host-waiting-room" element={<HostWaitingRoom />} />
       </Routes>
     </Router>
   );

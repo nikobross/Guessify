@@ -451,6 +451,31 @@ def get_playes_in_game(game_code):
 
     return jsonify({'players': players_dict})
 
+@app.route('/change-gamestate', methods=['POST'])
+def change_gamestate():
+    data = request.get_json()
+    game_code = data.get('game_code')
+    new_state = data.get('new_state')
+
+    if not game_code or not new_state:
+        return jsonify({'error': 'Missing game_code or new_state'}), 400
+
+    game = Game.query.filter_by(game_code=game_code).first()
+
+    if not game:
+        return jsonify({'error': 'Game not found'}), 404
+
+    game.set_gamestate(new_state)
+    return jsonify({'message': 'Game state updated successfully', 'gamestate': game.get_gamestate()}), 200
+
+@app.route('/get-gamestate/<int:game_id>', methods=['GET'])
+def get_gamestate(game_id):
+    game = Game.query.filter_by(id=game_id).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+    return jsonify({'gamestate': game.get_gamestate()}), 200
+
+
 # ----------------- TESTING -----------------
 
 

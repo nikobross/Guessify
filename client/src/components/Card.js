@@ -43,7 +43,7 @@ const Card = ({ playlistUri, playlistName, image, onClick, tooltip, imageClass =
       if (response.ok) {
         const data = await response.json();
         console.log('Game created:', data);
-        navigate('/waiting-room', { state: { gameCode: data.game_code } });
+        navigate('/host-waiting-room', { state: { gameCode: data.game_code } });
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.message);
