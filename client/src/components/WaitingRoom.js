@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import TopBar from './TopBars';
 import './css/WaitingRoom.css';
 
 const WaitingRoom = () => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const { gameCode } = location.state || {};
+  const { gameCode, userId } = location.state || {};
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [players, setPlayers] = useState([]);
+  const [gameState, setGameState] = useState('waiting');
 
   useEffect(() => {
     // Check if the user is logged in by checking localStorage
@@ -24,7 +26,6 @@ const WaitingRoom = () => {
         fetch(`/get-players-in-game/${gameCode}`)
           .then(response => response.json())
           .then(data => {
-            console.log('Players:', data);
             if (data.players) {
               setPlayers(data.players);
             }
@@ -33,13 +34,31 @@ const WaitingRoom = () => {
       }
     };
 
-    // Fetch players immediately and then periodically
+    const fetchGameState = () => {
+      if (gameCode) {
+        fetch(`/get-gamestate/${gameCode}`)
+          .then(response => response.json())
+          .then(data => {
+            setGameState(data.gamestate);
+            if (data.gamestate === 'playing') {
+              navigate('/playing-song', { state: { gameCode, userId } });
+            }
+          })
+          .catch(error => console.error('Error fetching game state:', error));
+      }
+    };
+
+    // Fetch players and game state immediately and then periodically
     fetchPlayers();
-    const intervalId = setInterval(fetchPlayers, 5000); // Fetch players every 5 seconds
+    fetchGameState();
+    const intervalId = setInterval(() => {
+      fetchPlayers();
+      fetchGameState();
+    }, 5000); // Fetch players and game state every 5 seconds
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
-  }, [gameCode]);
+  }, [gameCode, navigate, userId]);
 
   return (
     <div>

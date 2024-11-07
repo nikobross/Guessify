@@ -19,7 +19,8 @@ const JoinGame = ({ isLoggedIn, username }) => {
       });
 
       if (response.ok) {
-        navigate('/waiting-room', { state: { gameCode: gameCode } });
+        const data = await response.json();
+        navigate('/waiting-room', { state: { gameCode: gameCode, userId: data.user_id } });
       } else {
         setErrorMessage('Game could not be found');
       }
@@ -42,9 +43,7 @@ const JoinGame = ({ isLoggedIn, username }) => {
             value={gameCode}
             onChange={(e) => setGameCode(e.target.value)}
           />
-          <button className="join-game-button" onClick={handleJoinGame}>
-            Join
-          </button>
+          <button className="join-game-button" onClick={handleJoinGame}>Join</button>
           {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
       </div>
