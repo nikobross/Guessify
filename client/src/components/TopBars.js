@@ -1,5 +1,4 @@
-// src/components/TopBar.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './css/TopBar.css';
 import './css/Sidebar.css';
@@ -13,6 +12,14 @@ const TopBar = ({ isLoggedIn, username }) => {
   const location = useLocation();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [rightSidebarVisible, setRightSidebarVisible] = useState(false);
+
+  useEffect(() => {
+    if (sidebarVisible || rightSidebarVisible) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+  }, [sidebarVisible, rightSidebarVisible]);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);

@@ -58,6 +58,9 @@ class Game(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
     host = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     gamestate = db.Column(db.String(50), nullable=False, default='waiting')
+    song_uris = db.Column(db.Text, nullable=False)
+    artist_names = db.Column(db.Text, nullable=False)  # Add artist_names column
+    track_names = db.Column(db.Text, nullable=False)   # Add track_names column
 
     current_track = db.relationship('Track', backref=db.backref('games', lazy=True))
 
@@ -68,6 +71,27 @@ class Game(db.Model):
     def get_gamestate(self):
         return self.gamestate
 
+    def set_song_uris(self, uris):
+        self.song_uris = ','.join(uris)
+        db.session.commit()
+
+    def get_song_uris(self):
+        return self.song_uris.split(',')
+
+    def set_artist_names(self, names):
+        self.artist_names = ','.join(names)
+        db.session.commit()
+
+    def get_artist_names(self):
+        return self.artist_names.split(',')
+
+    def set_track_names(self, names):
+        self.track_names = ','.join(names)
+        db.session.commit()
+
+    def get_track_names(self):
+        return self.track_names.split(',')
+
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
@@ -75,6 +99,10 @@ class Player(db.Model):
     score = db.Column(db.Integer, default=0)
     current_guess_artist = db.Column(db.String(100), nullable=True)
     current_guess_track = db.Column(db.String(100), nullable=True)
+    
+    artist_guess_time = db.Column(db.DateTime, nullable=True)
+    track_guess_time = db.Column(db.DateTime, nullable=True)
+
     spotify_token = db.Column(db.String(500), nullable=True, default=None)
     name = db.Column(db.String(100), nullable=True, default=None)
 
@@ -95,8 +123,13 @@ def add_user(username, password):
     db.session.add(new_user)
     db.session.commit()
 
-def start_game(host, playlist_uri, game_code):
-    new_game = Game(game_code=game_code, playlist_uri=playlist_uri, host=host)
+def start_game(host, playlist_uri, game_code, song_uris, artist_names, track_names):
+    new_game = Game(game_code=game_code, 
+                    playlist_uri=playlist_uri, 
+                    host=host, 
+                    song_uris=song_uris, 
+                    artist_names=artist_names, 
+                    track_names=track_names)
     db.session.add(new_game)
     db.session.commit()
     return new_game

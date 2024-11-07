@@ -11,6 +11,7 @@ import datetime
 import string
 from datetime import timezone
 from dotenv import load_dotenv
+from difflib import SequenceMatcher
 
 """
 Server for Guessify
@@ -106,7 +107,11 @@ def game_to_dict(game):
         'game_code': game.game_code,
         'current_track_id': game.current_track_id,
         'timestamp': game.timestamp,
-        'host': game.host
+        'host': game.host,
+        'gamestate': game.gamestate,
+        'song_uris': game.song_uris,
+        'artist_names': game.artist_names,
+        'track_names': game.track_names
     }
 
 def refresh_spotify_token(user):
@@ -130,6 +135,27 @@ def refresh_spotify_token(user):
     else:
         return False
 
+def get_songs_from_playlist(playlist_uri):
+    headers = { 'Authorization': f'Bearer {current_user.spotify_token}' }
+    response = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_uri}/tracks', headers=headers)
+
+    if response.status_code != 200:
+        return None
+  
+    tracks = response.json()['items']
+    track_ids = set()
+    random_tracks = []
+    artist_names = []
+    track_names = []
+
+    while len(random_tracks) < 10 and len(track_ids) < len(tracks):
+        track = random.choice(tracks)
+        if track['track']['id'] not in track_ids:
+            track_ids.add(track['track']['id'])
+            random_tracks.append(track['track']['uri'])
+            artist_names.append(track['track']['artists'][0]['name'])
+            track_names.append(track['track']['name'])
+    return random_tracks, artist_names, track_names
 
 # ----------------- ROUTES -----------------
 
@@ -216,7 +242,6 @@ def update_username():
 # ----------------- SPOTIFY AUTHENTICATION -----------------
 
 
-
 @app.route('/user/profile', methods=['GET'])
 def user_profile():
     if not current_user.is_authenticated:
@@ -253,7 +278,6 @@ def user_profile():
         'spotify_profile': spotify_profile
     }
     return jsonify(user_data)
-
 
 @app.route('/user/spotify-token', methods=['POST'])
 def spotify_token():
@@ -361,25 +385,25 @@ def create_game():
 
     playlist_uri = body['playlist_uri']
 
-    # check if this is a valid playlist uri
-    headers = { 'Authorization': f'Bearer {current_user.spotify_token}' }
-    response = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_uri}', 
-                            headers=headers)
+    song_uris, artist_names, track_names = get_songs_from_playlist(playlist_uri)
 
-
-    if response.status_code != 200:
-        return error_response('Invalid playlist uri', 400)
+    if not song_uris or len(song_uris) < 10:
+        return error_response('Invalid playlist uri, make sure enough songs on playlist', 400)
 
     game_code = '-'.join(''.join(random.choices(string.digits[1:], k=1) + random.choices(string.digits, k=5)) for _ in range(1))
 
-    game = start_game(current_user.id, playlist_uri, game_code)
+    game = start_game(current_user.id, 
+                      playlist_uri, 
+                      game_code, 
+                      song_uris=','.join(song_uris), 
+                      artist_names=','.join(artist_names),
+                      track_names=','.join(track_names))
 
     player = add_player(game.id, current_user.id, current_user.spotify_token, current_user.username)
 
     db.session.commit()
 
     return jsonify(game_to_dict(game))
-
 
 @app.route('/get-game/<int:game_id>', methods=['GET'])
 def get_game(game_id):
@@ -464,6 +488,13 @@ def change_gamestate():
 
     if not game:
         return jsonify({'error': 'Game not found'}), 404
+    
+    if new_state not in ['lobby', 'playing', 'finished']:
+        return jsonify({'error': 'Invalid game state'}), 400
+    
+    if new_state == 'playing':
+        game.timestamp = datetime.datetime.now(datetime.timezone.utc)
+        db.session.commit()
 
     game.set_gamestate(new_state)
     return jsonify({'message': 'Game state updated successfully', 'gamestate': game.get_gamestate()}), 200
@@ -475,7 +506,112 @@ def get_gamestate(game_id):
         return jsonify({'message': 'Game not found'}), 404
     return jsonify({'gamestate': game.get_gamestate()}), 200
 
+@app.route('/check_guess', methods=['POST'])
+def check_guess():
+    body = json.loads(request.data)
 
+    check_fields(body, ['game_code', 'user_id', 'artist_guess', 'track_guess'])
+
+    game_code = body['game_code']
+    user_id = body['user_id']
+    artist_guess = body['artist_guess']
+    track_guess = body['track_guess']
+
+    game = Game.query.filter_by(game_code=game_code).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+
+    player = Player.query.filter_by(game_id=game.id, user_id=user_id).first()
+    if not player:
+        return jsonify({'message': 'Player not found'}), 404
+
+    correct_artist = game.artist_names.split(',')[game.current_track_id]
+    correct_track = game.track_names.split(',')[game.current_track_id]
+
+    # Remove parenthesis and everything in them
+    def clean_title(title):
+        return title.split('(')[0].strip()
+
+    clean_artist_guess = clean_title(artist_guess)
+    clean_track_guess = clean_title(track_guess)
+    clean_correct_artist = clean_title(correct_artist)
+    clean_correct_track = clean_title(correct_track)
+
+    def is_close_match(a, b, threshold=0.8):
+        return SequenceMatcher(None, a.lower(), b.lower()).ratio() >= threshold
+    artist_points = 0
+    track_points = 0
+
+    if is_close_match(clean_artist_guess, clean_correct_artist):
+        artist_guess_time = player.artist_guess_time
+        track_start_time = game.timestamp
+        time_taken = (artist_guess_time - track_start_time).total_seconds()
+        artist_points = max(1, 500 - int(time_taken / 10))
+
+    if is_close_match(clean_track_guess, clean_correct_track):
+        track_guess_time = player.track_guess_time
+        track_start_time = game.timestamp
+        time_taken = (track_guess_time - track_start_time).total_seconds()
+        track_points = max(1, 500 - int(time_taken / 10))
+
+    total_points = artist_points + track_points
+    player.score += total_points
+    db.session.commit()
+
+    return jsonify({'message': 'Points added!', 'score_increment': total_points}), 200
+
+@app.route('/lock-in-guess-artist', methods=['POST'])
+def lock_in_guess_artist():
+    body = json.loads(request.data)
+
+    check_fields(body, ['artist_guess', 'game_code', 'user_id'])
+
+    artist_guess = body['artist_guess']
+    game_code = body['game_code']
+    user_id = body['user_id']
+
+    game = Game.query.filter_by(game_code=game_code).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+    
+    player = Player.query.filter_by(game_id=game.id, user_id=user_id).first()
+    if not player:
+        return jsonify({'message': 'Player not found'}), 404
+    
+    player.current_guess_artist = artist_guess
+    player.artist_guess_time = datetime.datetime.now(datetime.timezone.utc)
+    db.session.commit()
+
+    return jsonify({'message': 'Artist guess locked in'}), 200
+
+@app.route('/lock-in-guess-track', methods=['POST'])
+def lock_in_guess_track():
+    body = json.loads(request.data)
+
+    check_fields(body, ['track_guess', 'game_code', 'user_id'])
+
+    track_guess = body['track_guess']
+    game_code = body['game_code']
+    user_id = body['user_id']
+
+    game = Game.query.filter_by(game_code=game_code).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+    
+    player = Player.query.filter_by(game_id=game.id, user_id=user_id).first()
+    if not player:
+        return jsonify({'message': 'Player not found'}), 404
+    
+    player.current_guess_track = track_guess
+    player.track_guess_time = datetime.datetime.now(datetime.timezone.utc)
+    db.session.commit()
+
+    return jsonify({'message': 'Track guess locked in'}), 200
+
+
+"""
+Remeber to add a buffer to the play song page, maybe a 3 2 1 countdown before the song starts playing
+"""
 # ----------------- TESTING -----------------
 
 
