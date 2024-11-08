@@ -58,9 +58,6 @@ load_dotenv()
 client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
 
-print('Loaded client_id:', client_id)
-print('Loaded client_secret:', client_secret)
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -127,9 +124,7 @@ def refresh_spotify_token(user):
         'client_id': client_id,
         'client_secret': client_secret,
     })
-
-    print(response.json())
-
+    
     if response.status_code == 200:
         tokens = response.json()
         user.spotify_token = tokens['access_token']
@@ -142,12 +137,18 @@ def refresh_spotify_token(user):
 
 def get_songs_from_playlist(playlist_uri):
     headers = { 'Authorization': f'Bearer {current_user.spotify_token}' }
-    response = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_uri}/tracks', headers=headers)
+    tracks = []
+    url = f'https://api.spotify.com/v1/playlists/{playlist_uri}/tracks'
+    
+    while url:
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            return None
+        
+        data = response.json()
+        tracks.extend(data['items'])
+        url = data['next']  # Get the next URL for pagination
 
-    if response.status_code != 200:
-        return None
-  
-    tracks = response.json()['items']
     track_ids = set()
     random_tracks = []
     artist_names = []
@@ -160,6 +161,7 @@ def get_songs_from_playlist(playlist_uri):
             random_tracks.append(track['track']['uri'])
             artist_names.append(track['track']['artists'][0]['name'])
             track_names.append(track['track']['name'])
+    
     return random_tracks, artist_names, track_names
 
 def player_to_dict(game_code, player_id):
@@ -201,13 +203,16 @@ def check_all_guesses(game):
             artist_guess_time = player.artist_guess_time
             track_start_time = game.timestamp
             time_taken = (artist_guess_time - track_start_time).total_seconds()
-            artist_points = max(1, 500 - int(time_taken / 10))
+            artist_points = max(200, 500 - int((time_taken) * 10))
 
         if is_close_match(clean_track_guess, clean_correct_track):
             track_guess_time = player.track_guess_time
             track_start_time = game.timestamp
             time_taken = (track_guess_time - track_start_time).total_seconds()
-            track_points = max(1, 500 - int(time_taken / 10))
+            track_points = max(200, 500 - int((time_taken) * 10))
+
+        print(f'Artist guess: {clean_artist_guess}, correct answer: {clean_correct_artist}, artist points: {artist_points}')
+        print(f'Track guess: {clean_track_guess}, correct answer: {clean_correct_track}, track points: {track_points}')
 
         total_points = artist_points + track_points
         player.score += total_points
@@ -227,8 +232,8 @@ def set_all_guesses_null(game):
 
     return jsonify({'message': 'All guesses set to null'}), 200
 
-# ----------------- ROUTES -----------------
 
+# ----------------- ROUTES -----------------
 
 
 @app.route('/user/', methods=['POST'])
@@ -240,6 +245,10 @@ def create_user():
     
     username = body['username']
     password = body['password']
+
+    existing_user = User.query.filter_by(username=username).first()
+    if existing_user:
+        return error_response('Username already exists', 400)
 
     add_user(username, password)
     return success_response('User created')
@@ -435,13 +444,21 @@ def get_access_token():
 """
 Lots of broken stuff:
     1. not working on chrome, only on firefox atm
-    2. bugging out when song timer is finished (fixed)
-    3. don't allow creating users with the same name
+
+
     4. getting refresh token seems to be broken
     5. still need to test how it works with multiple users
     6. need ability to join without audio
     7. make the spotify login look nicer
-    8. everything to do with the actual game needs new style
+    8. podium needs new style
+
+    8. show the time counting down
+
+    
+    11. clean up to remove old games
+    12. add points on the final question
+    13. add a small animation to show song is playing
+
 """
 
 @app.route('/create-game', methods=['POST'])
@@ -640,8 +657,6 @@ def check_guess():
 def lock_in_guess_artist():
     body = json.loads(request.data)
 
-    print(body)
-
     check_fields(body, ['artist_guess', 'game_code', 'user_id'])
 
     artist_guess = body['artist_guess']
@@ -727,7 +742,6 @@ def next_song():
         return jsonify({'message': 'Game not found'}), 404
     
     check_all_guesses(game)
-    print('All guesses checked')
     set_all_guesses_null(game)
 
     song_uris = game.song_uris.split('|')

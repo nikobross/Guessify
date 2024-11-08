@@ -25,22 +25,22 @@ const MainPage = () => {
       image: '/popular/viralhits.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DXaKIA8E7WcJj',
       name: 'All out 1960s',
       image: '/allout/allout1960s.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DX4UtSsGT1Sbe',
       name: 'All out 1980s',
       image: '/allout/allout1980s.jpeg'
     },
     {
-      uri: '37i9dQZF1DXcBWIGoYBM5M',
+      uri: '37i9dQZF1DWVlLVXKTOAYa',
       name: 'Pop Right Now',
       image: '/genres/poprightnow.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DX10zKzsJ2jva',
       name: 'Viva Latino',
       image: '/genres/vivalatino.jpeg'
     }

@@ -135,6 +135,7 @@ body.no-scroll {
 
   .close-button:hover {
     background-color: transparent;
+    box-shadow: none;
   }
   
   .modal-image {

@@ -8,10 +8,14 @@ function SignUp() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [usernameError, setUsernameError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
+    setUsernameError('');
+
     if (password !== confirmPassword) {
       setErrorMessage('Passwords must match');
       return;
@@ -27,6 +31,13 @@ function SignUp() {
 
     if (response.ok) {
       navigate('/login');
+    } else if (response.status === 400) {
+      const data = await response.json();
+      if (data.message === 'Username already exists') {
+        setUsernameError('Username already exists');
+      } else {
+        setErrorMessage('Sign-up failed');
+      }
     } else {
       setErrorMessage('Sign-up failed');
     }
@@ -44,7 +55,9 @@ function SignUp() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              className={usernameError ? styles.error : ''}
             />
+            {usernameError && <p className={styles.errorMessage}>{usernameError}</p>}
           </div>
           <div className={styles.loginInputGroup}>
             <label>Password:</label>

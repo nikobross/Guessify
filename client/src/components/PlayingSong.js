@@ -1,6 +1,6 @@
 /* global Spotify */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './css/PlayingSong.css';
 
@@ -18,6 +18,9 @@ const PlayingSong = () => {
   const [deviceId, setDeviceId] = useState(null);
   const [token, setToken] = useState('');
   const [songUri, setSongUri] = useState('');
+
+  const trackInputRef = useRef(null);
+  const artistInputRef = useRef(null);
 
   const loadSpotifySDK = useCallback((token) => {
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -208,6 +211,7 @@ const PlayingSong = () => {
       .then(response => response.json())
       .then(data => {
         console.log('Response:', data);
+        trackInputRef.current.focus(); // Focus on the track input field after submitting artist guess
       })
       .catch(error => console.error('Error:', error));
   };
@@ -230,46 +234,64 @@ const PlayingSong = () => {
       .then(response => response.json())
       .then(data => {
         console.log('Response:', data);
+        artistInputRef.current.focus(); // Focus on the artist input field after submitting track guess
       })
       .catch(error => console.error('Error:', error));
   };
 
   return (
     <div className="playing-song-container">
-      <div className="song-number">
-        Song {currentSongNumber}/{totalSongs}
-      </div>
-      <div className="input-group">
-        <input
-          type="text"
-          value={artistGuess}
-          onChange={(e) => setArtistGuess(e.target.value)}
-          disabled={isArtistSubmitted}
-          className={isArtistSubmitted ? 'locked' : ''}
-        />
-        <button
-          onClick={handleArtistSubmit}
-          disabled={isArtistSubmitted || artistGuess.trim() === ''}
-          className={isArtistSubmitted ? 'locked' : ''}
-        >
-          Submit Artist
-        </button>
-      </div>
-      <div className="input-group">
-        <input
-          type="text"
-          value={trackGuess}
-          onChange={(e) => setTrackGuess(e.target.value)}
-          disabled={isTrackSubmitted}
-          className={isTrackSubmitted ? 'locked' : ''}
-        />
-        <button
-          onClick={handleTrackSubmit}
-          disabled={isTrackSubmitted || trackGuess.trim() === ''}
-          className={isTrackSubmitted ? 'locked' : ''}
-        >
-          Submit Track
-        </button>
+      <div className="playing-box">
+        <div className="song-number">
+          Song {currentSongNumber}/{totalSongs}
+        </div>
+        <div className="input-group">
+          <input
+            type="text"
+            value={trackGuess}
+            onChange={(e) => setTrackGuess(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleTrackSubmit();
+              }
+            }}
+            disabled={isTrackSubmitted}
+            className={`playing-input ${isTrackSubmitted ? 'locked' : ''}`}
+            placeholder="Track Title"
+            autoFocus
+            ref={trackInputRef}
+          />
+          <button
+            onClick={handleTrackSubmit}
+            disabled={isTrackSubmitted || trackGuess.trim() === ''}
+            className={`playing-button ${isTrackSubmitted ? 'locked' : ''}`}
+          >
+            Submit Track
+          </button>
+        </div>
+        <div className="input-group">
+          <input
+            type="text"
+            value={artistGuess}
+            onChange={(e) => setArtistGuess(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleArtistSubmit();
+              }
+            }}
+            disabled={isArtistSubmitted}
+            className={`playing-input ${isArtistSubmitted ? 'locked' : ''}`}
+            placeholder="Artist Name"
+            ref={artistInputRef}
+          />
+          <button
+            onClick={handleArtistSubmit}
+            disabled={isArtistSubmitted || artistGuess.trim() === ''}
+            className={`playing-button ${isArtistSubmitted ? 'locked' : ''}`}
+          >
+            Submit Artist
+          </button>
+        </div>
       </div>
     </div>
   );

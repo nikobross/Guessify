@@ -24,7 +24,7 @@ const MoreGames = () => {
       image: '/popular/top50global.jpeg'
     },
     {
-      uri: '37i9dQZF1DXcBWIGoYBM5M',
+      uri: '37i9dQZEVXbMDoHDwVN2tF',
       name: 'Top 50 - Global',
       image: '/popular/top50us.jpeg'
     },
@@ -44,7 +44,7 @@ const MoreGames = () => {
       image: '/popular/moststreamed.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '4g53onSOsSmpakrqL9tXMd',
       name: 'Viral Hits',
       image: '/popular/viralhits.jpeg'
     }
@@ -52,32 +52,32 @@ const MoreGames = () => {
 
   const [throughTheYears] = useState([
     {
-      uri: '37i9dQZF1DXcBWIGoYBM5M',
+      uri: '37i9dQZF1DX5Ejj0EkURtP',
       name: 'All out 2010s',
       image: '/allout/allout2010s.jpeg'
     },
     {
-      uri: '37i9dQZF1DXcBWIGoYBM5M',
+      uri: '37i9dQZF1DX4o1oenSJRJd',
       name: 'All out 2000s',
       image: '/allout/allout2000s.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DXbTxeAdrVG2l',
       name: 'All out 1990s',
       image: '/allout/allout1990s.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DX4UtSsGT1Sbe',
       name: 'All out 1980s',
       image: '/allout/allout1980s.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DWTJ7xPn4vNaz',
       name: 'All out 1970s',
       image: '/allout/allout1970s.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DXaKIA8E7WcJj',
       name: 'All out 1960s',
       image: '/allout/allout1960s.jpeg'
     }
@@ -85,32 +85,32 @@ const MoreGames = () => {
 
   const [genreGames] = useState([
     {
-      uri: '37i9dQZF1DXcBWIGoYBM5M',
+      uri: '37i9dQZF1DX0XUsuxWHRQd',
       name: 'Rap Caviar',
       image: '/genres/rapcaviar.jpeg'
     },
     {
-      uri: '37i9dQZF1DXcBWIGoYBM5M',
+      uri: '37i9dQZF1DWVlLVXKTOAYa',
       name: 'Pop Right Now',
       image: '/genres/poprightnow.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DX1lVhptIYRda',
       name: 'Hot Country',
       image: '/genres/hotcountry.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DX10zKzsJ2jva',
       name: 'Viva Latino',
       image: '/genres/vivalatino.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DWXRqgorJj26U',
       name: 'Rock Classics',
       image: '/genres/rockclassics.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DXa41CMuUARjl',
       name: 'All New Dance',
       image: '/genres/allnewdance.jpeg'
     }

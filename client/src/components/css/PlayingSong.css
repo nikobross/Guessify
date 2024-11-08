@@ -2,37 +2,65 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  justify-content: center; /* Center the container vertically */
+  height: 100vh; /* Full viewport height */
+  background-color: #333; /* Grey background */
+  color: white;
+}
+
+.song-number {
+  font-size: 24px; /* Increase font size */
+  margin-bottom: 20px;
 }
 
 .input-group {
   margin-bottom: 20px;
+  width: 100%; /* Full width */
 }
 
-input {
-  padding: 10px;
-  font-size: 16px;
+.playing-input {
+  padding: 15px; /* Increase padding */
+  font-size: 18px; /* Increase font size */
   margin-right: 10px;
-  border: 1px solid #ccc;
+  border: 2px solid #333;
   border-radius: 4px;
+  width: calc(100% - 20px); /* Full width minus padding */
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #007bff;
+.playing-button {
+  padding: 15px 30px; /* Increase padding */
+  background-color: #45a049; /* Green button */
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 18px; /* Increase font size */
 }
 
-button:hover {
-  background-color: #0056b3;
+.playing-button:hover {
+  background-color: #3d8b41;
+  box-shadow: 0 4px 8px #212121;
+  transform: scale(1.05);
 }
 
-input.locked,
-button.locked {
-  background-color: #ccc;
+.playing-input.locked {
+  background-color: #d3d3d3;
   cursor: not-allowed;
+}
+
+.playing-button.locked {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.playing-box {
+  background-color: #444; /* Lighter gray box */
+  padding: 40px; /* Increase padding for more space inside the box */
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center all text, links, and buttons */
+  width: 400px; /* Increase width */
+  max-width: 90%; /* Ensure it doesn't overflow on smaller screens */
 }
