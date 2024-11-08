@@ -58,6 +58,9 @@ load_dotenv()
 client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
 
+print('Loaded client_id:', client_id)
+print('Loaded client_secret:', client_secret)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -124,6 +127,8 @@ def refresh_spotify_token(user):
         'client_id': client_id,
         'client_secret': client_secret,
     })
+
+    print(response.json())
 
     if response.status_code == 200:
         tokens = response.json()
@@ -315,14 +320,14 @@ def user_profile():
     spotify_profile = None
     if current_user.spotify_logged_in:
 
-        if current_user.spotify_token_expiry and current_user.spotify_token_expiry.tzinfo is None:
-            current_user.spotify_token_expiry = current_user.spotify_token_expiry.replace(tzinfo=datetime.timezone.utc)
+        current_user.spotify_token_expiry = current_user.spotify_token_expiry.replace(tzinfo=datetime.timezone.utc)
 
         if current_user.spotify_token_expiry and current_user.spotify_token_expiry \
                                                 < datetime.datetime.now(datetime.timezone.utc):
             if refresh_spotify_token(current_user):
                 return success_response('Spotify token refreshed')
             else:
+                print('Failed to refresh Spotify token')
                 return error_response('Failed to refresh Spotify token')
 
         headers = {
@@ -428,13 +433,15 @@ def get_access_token():
     return jsonify({'access_token': current_user.spotify_token})
 
 """
-Next steps:
-    1. Instantiate game object
-    2. Work out the ability to start a game
-    3. Have players join through a game code
-    4. Make sure players scores can be updated
-    5. Leaderboard functionality
-    6. Route to get songs uris from a specified public playlist
+Lots of broken stuff:
+    1. not working on chrome, only on firefox atm
+    2. bugging out when song timer is finished (fixed)
+    3. don't allow creating users with the same name
+    4. getting refresh token seems to be broken
+    5. still need to test how it works with multiple users
+    6. need ability to join without audio
+    7. make the spotify login look nicer
+    8. everything to do with the actual game needs new style
 """
 
 @app.route('/create-game', methods=['POST'])
@@ -764,6 +771,7 @@ def check_leaderboard():
     if time_elapsed >= 30:
         if len(game.song_uris.split('|')) == 1:
             return jsonify({'move_to_podium': True}), 200
+        game.set_gamestate('leaderboard')
         return jsonify({'move_to_leaderboard': True}), 200
 
     # Check if all players have guessed

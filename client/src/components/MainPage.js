@@ -20,7 +20,7 @@ const MainPage = () => {
       image: '/popular/newmusicfriday.jpeg'
     },
     {
-      uri: '37i9dQZF1DX4JAvHpjipBk',
+      uri: '37i9dQZF1DX2L0iB23Enbq',
       name: 'Viral Hits',
       image: '/popular/viralhits.jpeg'
     },
