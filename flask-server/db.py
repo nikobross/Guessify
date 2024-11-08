@@ -72,25 +72,25 @@ class Game(db.Model):
         return self.gamestate
 
     def set_song_uris(self, uris):
-        self.song_uris = ','.join(uris)
+        self.song_uris = '|'.join(uris)
         db.session.commit()
 
     def get_song_uris(self):
-        return self.song_uris.split(',')
+        return self.song_uris.split('|')
 
     def set_artist_names(self, names):
-        self.artist_names = ','.join(names)
+        self.artist_names = '|'.join(names)
         db.session.commit()
 
     def get_artist_names(self):
-        return self.artist_names.split(',')
+        return self.artist_names.split('|')
 
     def set_track_names(self, names):
-        self.track_names = ','.join(names)
+        self.track_names = '|'.join(names)
         db.session.commit()
 
     def get_track_names(self):
-        return self.track_names.split(',')
+        return self.track_names.split('|')
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -99,7 +99,7 @@ class Player(db.Model):
     score = db.Column(db.Integer, default=0)
     current_guess_artist = db.Column(db.String(100), nullable=True)
     current_guess_track = db.Column(db.String(100), nullable=True)
-    
+
     artist_guess_time = db.Column(db.DateTime, nullable=True)
     track_guess_time = db.Column(db.DateTime, nullable=True)
 

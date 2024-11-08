@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import TopBar from './TopBars';
-import './css/WaitingRoom.css';
+import './css/Leaderboard.css';
 
-const HostWaitingRoom = () => {
+const Leaderboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { gameCode, userId } = location.state || {};
+  const { gameCode, userId, isHost } = location.state || {};
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [players, setPlayers] = useState([]);
-  const [gameState, setGameState] = useState('waiting');
 
   useEffect(() => {
     // Check if the user is logged in by checking localStorage
@@ -26,6 +25,7 @@ const HostWaitingRoom = () => {
         fetch(`/get-players-in-game/${gameCode}`)
           .then(response => response.json())
           .then(data => {
+            console.log('Players:', data);
             if (data.players) {
               setPlayers(data.players);
             }
@@ -39,28 +39,23 @@ const HostWaitingRoom = () => {
         fetch(`/get-gamestate/${gameCode}`)
           .then(response => response.json())
           .then(data => {
-            setGameState(data.gamestate);
             if (data.gamestate === 'playing') {
-              navigate('/playing-song', { state: { gameCode, userId } });
+              navigate('/playing-song', { state: { gameCode, userId, isHost } });
             }
           })
           .catch(error => console.error('Error fetching game state:', error));
       }
     };
 
-    // Fetch players and game state immediately and then periodically
+    // Fetch players and next song immediately
     fetchPlayers();
-    fetchGameState();
-    const intervalId = setInterval(() => {
-      fetchPlayers();
-      fetchGameState();
-    }, 5000); // Fetch players and game state every 5 seconds
+    const intervalId = setInterval(fetchGameState, 1000); // Check game state every 5 seconds
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
   }, [gameCode, navigate, userId]);
 
-  const handleNext = () => {
+  const handleNextQuestion = () => {
     // Change the game state to "playing"
     fetch('/change-gamestate', {
       method: 'POST',
@@ -72,8 +67,7 @@ const HostWaitingRoom = () => {
       .then(response => response.json())
       .then(data => {
         console.log('Game state changed:', data);
-        setGameState('playing');
-        navigate('/playing-song', { state: { gameCode, userId, isHost: true } });
+        navigate('/playing-song', { state: { gameCode, userId, isHost } });
       })
       .catch(error => console.error('Error changing game state:', error));
   };
@@ -81,21 +75,25 @@ const HostWaitingRoom = () => {
   return (
     <div>
       <TopBar isLoggedIn={isLoggedIn} username={username} />
-      <div className="waiting-room-container">
-        <div className="waiting-room-box">
-          <h1>Host Waiting Room</h1>
+      <div className="leaderboard-container">
+        <div className="leaderboard-box">
+          <h1>Leaderboard</h1>
           <p>Game Code: {gameCode}</p>
           <h2>Players:</h2>
           <ul>
             {players.map((player, index) => (
-              <li key={index}>{player.username}</li>
+              <li key={index}>{player.username}: {player.score}</li>
             ))}
           </ul>
-          <button className="custom-button" onClick={handleNext}>Next</button>
+          {isHost && (
+            <button className="next-question-button" onClick={handleNextQuestion}>
+              Next Question
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default HostWaitingRoom;
+export default Leaderboard;

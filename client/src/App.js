@@ -8,11 +8,13 @@ import SignUp from './components/SignUp';
 import SpotifyLogin from './components/SpotifyLogin';
 import SpotifyCallback from './components/SpotifyCallback';
 import UserProfile from './components/UserProfile';
-import MoreGames from './components/MoreGames'; // Ensure this import is correct
+import MoreGames from './components/MoreGames';
 import PlaySong from './components/PlaySong';
 import WaitingRoom from './components/WaitingRoom';
 import HostWaitingRoom from './components/HostWaitingRoom';
 import PlayingSong from './components/PlayingSong';
+import Leaderboard from './components/Leaderboard';
+import Podium from './components/Podium';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
         <Route path="/waiting-room" element={<WaitingRoom />} />
         <Route path="/host-waiting-room" element={<HostWaitingRoom />} />
         <Route path="/playing-song" element={<PlayingSong />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/podium" element={<Podium />} />
       </Routes>
     </Router>
   );

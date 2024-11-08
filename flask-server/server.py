@@ -168,6 +168,60 @@ def player_to_dict(game_code, player_id):
         'artist_guess_time': player.artist_guess_time,
         'track_guess_time': player.track_guess_time,
     }
+
+def check_all_guesses(game):
+
+    players = Player.query.filter_by(game_id=game.id).all()
+    correct_artist = game.artist_names.split('|')[0]
+    correct_track = game.track_names.split('|')[0]
+
+    # Remove parenthesis and everything in them
+    def clean_title(title):
+        return title.split('(')[0].strip()
+
+    clean_correct_artist = clean_title(correct_artist)
+    clean_correct_track = clean_title(correct_track)
+
+    def is_close_match(a, b, threshold=0.8):
+        return SequenceMatcher(None, a.lower(), b.lower()).ratio() >= threshold
+
+    for player in players:
+        clean_artist_guess = clean_title(player.current_guess_artist or "")
+        clean_track_guess = clean_title(player.current_guess_track or "")
+
+        artist_points = 0
+        track_points = 0
+
+        if is_close_match(clean_artist_guess, clean_correct_artist):
+            artist_guess_time = player.artist_guess_time
+            track_start_time = game.timestamp
+            time_taken = (artist_guess_time - track_start_time).total_seconds()
+            artist_points = max(1, 500 - int(time_taken / 10))
+
+        if is_close_match(clean_track_guess, clean_correct_track):
+            track_guess_time = player.track_guess_time
+            track_start_time = game.timestamp
+            time_taken = (track_guess_time - track_start_time).total_seconds()
+            track_points = max(1, 500 - int(time_taken / 10))
+
+        total_points = artist_points + track_points
+        player.score += total_points
+
+    db.session.commit()
+
+    return jsonify({'message': 'All guesses checked and scores updated!'}), 200
+
+def set_all_guesses_null(game):
+    players = Player.query.filter_by(game_id=game.id).all()
+    for player in players:
+        player.current_guess_artist = None
+        player.current_guess_track = None
+        player.artist_guess_time = None
+        player.track_guess_time = None
+    db.session.commit()
+
+    return jsonify({'message': 'All guesses set to null'}), 200
+
 # ----------------- ROUTES -----------------
 
 
@@ -323,7 +377,7 @@ def spotify_token():
 def login_test():
     redirect_uri = 'http://localhost:3000/callback'
     state = generate_random_string(16)
-    scope = 'user-read-private user-read-email user-modify-playback-state user-read-playback-state streaming'
+    scope = 'user-read-private user-read-email user-modify-playback-state user-read-playback-state user-read-currently-playing streaming app-remote-control'
 
     query_params = {
         'response_type': 'code',
@@ -369,6 +423,8 @@ def callback():
 def get_access_token():
     if not current_user.is_authenticated:
         return jsonify({'message': 'User not authenticated'}), 401
+    if not current_user.spotify_logged_in:
+        return jsonify({'message': 'User not logged in to Spotify'}), 403
     return jsonify({'access_token': current_user.spotify_token})
 
 """
@@ -406,9 +462,9 @@ def create_game():
     game = start_game(current_user.id, 
                       playlist_uri, 
                       game_code, 
-                      song_uris=','.join(song_uris), 
-                      artist_names=','.join(artist_names),
-                      track_names=','.join(track_names))
+                      song_uris='|'.join(song_uris), 
+                      artist_names='|'.join(artist_names),
+                      track_names='|'.join(track_names))
 
     player = add_player(game.id, current_user.id, current_user.spotify_token, current_user.username)
 
@@ -538,8 +594,8 @@ def check_guess():
     if not player:
         return jsonify({'message': 'Player not found'}), 404
 
-    correct_artist = game.artist_names.split(',')[0]
-    correct_track = game.track_names.split(',')[0]
+    correct_artist = game.artist_names.split('|')[0]
+    correct_track = game.track_names.split('|')[0]
 
     # Remove parenthesis and everything in them
     def clean_title(title):
@@ -640,7 +696,7 @@ def play():
     if not player:
         return jsonify({'message': 'Player not found'}), 404
     
-    song_uris = game.song_uris.split(',')
+    song_uris = game.song_uris.split('|')
     first_song_uri = song_uris[0]
     
     # check if the player is logged in to spotify
@@ -654,24 +710,30 @@ def next_song():
     body = json.loads(request.data)
 
     check_fields(body, ['game_code'])
+    
 
     game_code = body['game_code']
 
     game = Game.query.filter_by(game_code=game_code).first()
+
     if not game:
         return jsonify({'message': 'Game not found'}), 404
+    
+    check_all_guesses(game)
+    print('All guesses checked')
+    set_all_guesses_null(game)
 
-    song_uris = game.song_uris.split(',')
-    artist_names = game.artist_names.split(',')
-    track_names = game.track_names.split(',')
+    song_uris = game.song_uris.split('|')
+    artist_names = game.artist_names.split('|')
+    track_names = game.track_names.split('|')
 
     song_uris.pop(0)
     artist_names.pop(0)
     track_names.pop(0)
 
-    game.song_uris = ','.join(song_uris)
-    game.artist_names = ','.join(artist_names)
-    game.track_names = ','.join(track_names)
+    game.song_uris = '|'.join(song_uris)
+    game.artist_names = '|'.join(artist_names)
+    game.track_names = '|'.join(track_names)
 
     db.session.commit()
 
@@ -682,6 +744,74 @@ def get_players_in_game_by_id(game_id):
     players = Player.query.filter_by(game_id=game_id).all()
     return [player_to_dict(game_id, player.user_id) for player in players]
 
+@app.route('/check-leaderboard', methods=['POST'])
+def check_leaderboard():
+    body = json.loads(request.data)
+
+    check_fields(body, ['game_code'])
+
+    game_code = body['game_code']
+
+    game = Game.query.filter_by(game_code=game_code).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+
+
+    # Check if it has been 30 seconds since the timestamp of the game
+    current_time = datetime.datetime.now(datetime.timezone.utc)
+    game.timestamp = game.timestamp.replace(tzinfo=datetime.timezone.utc)
+    time_elapsed = (current_time - game.timestamp).total_seconds()
+    if time_elapsed >= 30:
+        if len(game.song_uris.split('|')) == 1:
+            return jsonify({'move_to_podium': True}), 200
+        return jsonify({'move_to_leaderboard': True}), 200
+
+    # Check if all players have guessed
+    players = Player.query.filter_by(game_id=game.id).all()
+    all_guessed = all(player.current_guess_artist and player.current_guess_track for player in players)
+    
+    if all_guessed:
+        if len(game.song_uris.split('|')) == 1:
+            return jsonify({'move_to_podium': True}), 200
+        game.set_gamestate('leaderboard')
+        return jsonify({'move_to_leaderboard': True}), 200
+
+    return jsonify({'move_to_leaderboard': False, 'move_to_podium': False}), 200
+
+@app.route('/get-current-song-number', methods=['POST'])
+def get_current_song_number():
+    body = json.loads(request.data)
+
+    check_fields(body, ['game_code'])
+
+    game_code = body['game_code']
+
+    game = Game.query.filter_by(game_code=game_code).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+
+    total_songs = 10
+    current_song_number = total_songs - len(game.song_uris.split('|')) + 1
+
+    return jsonify({'current_song_number': current_song_number, 'total_songs': total_songs}), 200
+
+@app.route('/get-current-song-uri', methods=['POST'])
+def get_current_song_uri():
+    body = json.loads(request.data)
+
+    check_fields(body, ['game_code'])
+
+    game_code = body['game_code']
+
+    game = Game.query.filter_by(game_code=game_code).first()
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+
+    song_uris = game.song_uris.split('|')
+    current_song_uri = song_uris[0]
+
+    return jsonify({'song_uri': current_song_uri}), 200
+    
 """
 Remeber to add a buffer to the play song page, maybe a 3 2 1 countdown before the song starts playing
 """

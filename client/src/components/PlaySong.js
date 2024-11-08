@@ -36,7 +36,6 @@ const PlaySong = () => {
       name: 'Web Playback SDK Quick Start Player',
       getOAuthToken: cb => { cb(token); },
       volume: 0.5,
-      robustness: 'SW_SECURE_CRYPTO' // Specify the robustness level
     });
 
     // Error handling
@@ -46,7 +45,12 @@ const PlaySong = () => {
     player.addListener('playback_error', ({ message }) => { console.error('Playback Error:', message); });
 
     // Playback status updates
-    player.addListener('player_state_changed', state => { console.log('Player State Changed:', state); });
+    player.addListener('player_state_changed', state => { 
+      console.log('Player State Changed:', state); 
+      if (state && !state.paused) {
+        console.log('Song is playing');
+      }
+    });
 
     // Ready
     player.addListener('ready', ({ device_id }) => {
@@ -64,11 +68,15 @@ const PlaySong = () => {
     setPlayer(player);
   };
 
-  const playSong = () => {
+  const playSong = useCallback(() => {
     if (!deviceId || !token) {
       console.error('Device ID or token is missing');
       return;
     }
+
+    console.log('Device ID:', deviceId);
+    console.log('Access Token:', token);
+    console.log('Request Body:', JSON.stringify({ uris: ['spotify:track:3xTUOCFRAsBHVFuwhpv5t3'] }));
 
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
       method: 'PUT',
@@ -83,10 +91,12 @@ const PlaySong = () => {
       if (response.ok) {
         console.log('Song is playing');
       } else {
-        console.error('Failed to play song', response);
+        response.json().then(data => {
+          console.error('Failed to play song', data);
+        });
       }
     }).catch(error => console.error('Error playing song:', error));
-  };
+  }, [deviceId, token]);
 
   return (
     <div>

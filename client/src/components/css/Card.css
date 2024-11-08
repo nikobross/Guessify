@@ -132,6 +132,10 @@ body.no-scroll {
     color: white;
     cursor: pointer;
   }
+
+  .close-button:hover {
+    background-color: transparent;
+  }
   
   .modal-image {
     width: 200px;

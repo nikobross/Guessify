@@ -41,7 +41,7 @@ const WaitingRoom = () => {
           .then(data => {
             setGameState(data.gamestate);
             if (data.gamestate === 'playing') {
-              navigate('/playing-song', { state: { gameCode, userId } });
+              navigate('/playing-song', { state: { gameCode, userId, isHost: false } });
             }
           })
           .catch(error => console.error('Error fetching game state:', error));
