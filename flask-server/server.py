@@ -203,13 +203,13 @@ def check_all_guesses(game):
             artist_guess_time = player.artist_guess_time
             track_start_time = game.timestamp
             time_taken = (artist_guess_time - track_start_time).total_seconds()
-            artist_points = max(200, 500 - int((time_taken) * 10))
+            artist_points = max(200, 520 - int((time_taken) * 10))
 
         if is_close_match(clean_track_guess, clean_correct_track):
             track_guess_time = player.track_guess_time
             track_start_time = game.timestamp
             time_taken = (track_guess_time - track_start_time).total_seconds()
-            track_points = max(200, 500 - int((time_taken) * 10))
+            track_points = max(200, 520 - int((time_taken) * 10))
 
         print(f'Artist guess: {clean_artist_guess}, correct answer: {clean_correct_artist}, artist points: {artist_points}')
         print(f'Track guess: {clean_track_guess}, correct answer: {clean_correct_track}, track points: {track_points}')
@@ -466,6 +466,12 @@ def create_game():
     if not current_user.is_authenticated:
         return error_response('User not logged in', 401)
     
+    if current_user.spotify_token_expiry and current_user.spotify_token_expiry \
+                                            < datetime.datetime.now(datetime.timezone.utc):
+        if not refresh_spotify_token(current_user):
+            return error_response('Failed to refresh Spotify token')
+
+
     if not current_user.spotify_logged_in:
         return error_response('User not logged in to Spotify', 403)
 
