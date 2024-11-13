@@ -16,42 +16,120 @@ body {
 .join-game-box {
   background-color: #444;
   border-radius: 8px;
-  padding: 40px;
+  padding: 60px; /* Increase padding */
   text-align: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .join-game-box h1 {
-  margin-bottom: 20px;
-  font-size: 36px;
+  margin-bottom: 30px; /* Increase margin */
+  font-size: 48px; /* Increase font size */
 }
 
 .join-game-input {
-  width: 100%;
-  padding: 15px;
-  font-size: 24px;
-  border: none;
-  border-radius: 4px;
-  margin-bottom: 20px;
+  width: calc(100% - 40px); /* Make input fields take full width of the box minus padding */
+  padding: 20px; /* Increase padding */
+  border: 2px solid #333; /* Original background color */
+  border-radius: 5px;
+  background-color: #ffffff; /* White background */
+  text-align: center;
+  font-size: 28px; /* Increase font size */
+  font-weight: bold; /* Make font bold */
+  font-family: 'Roboto', sans-serif;
+}
+
+.join-game-input:focus {
+  outline: none;
+  border-color: #45a049; /* Green border on focus */
+  box-shadow: 0 0 5px #45a049; /* Green shadow on focus */
 }
 
 .join-game-button {
-  width: 100%;
-  padding: 15px;
-  font-size: 24px;
-  background-color: #007bff;
+  padding: 20px 40px; /* Increase padding */
+  background-color: #45a049; /* Green button */
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  margin-top: 20px; /* Increase margin */
+  text-align: center;
+  font-size: 24px; /* Increase font size */
 }
 
 .join-game-button:hover {
-  background-color: #0056b3;
+  background-color: #3d8b41;
+  transform: scale(1.05);
 }
 
 .error-message {
   color: red;
   margin-top: 20px;
-  font-size: 18px;
+  font-size: 24px; /* Increase font size */
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  position: relative;
+  background-color: #444; /* Grey box */
+  border-radius: 8px;
+  padding: 30px; /* Increase padding */
+  text-align: center;
+  box-shadow: 0 10px 14px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 400px; /* Increase width */
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 36px; /* Increase font size */
+  color: white;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.modal-button {
+  margin-top: 20px;
+  padding: 20px 40px; /* Increase padding */
+  font-size: 24px; /* Increase font size */
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 280px; /* Increase width */
+  height: 80px; /* Increase height */
+  transition: transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.modal-button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.modal-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }

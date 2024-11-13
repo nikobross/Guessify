@@ -466,7 +466,8 @@ def create_game():
     if not current_user.is_authenticated:
         return error_response('User not logged in', 401)
     
-    if current_user.spotify_token_expiry and current_user.spotify_token_expiry \
+    time_aware_expiry = current_user.spotify_token_expiry.replace(tzinfo=datetime.timezone.utc)
+    if current_user.spotify_token_expiry and time_aware_expiry \
                                             < datetime.datetime.now(datetime.timezone.utc):
         if not refresh_spotify_token(current_user):
             return error_response('Failed to refresh Spotify token')
@@ -537,6 +538,21 @@ def join_game():
     db.session.commit()
 
     return success_response({'game': game_to_dict(game), 'user_id': current_user.id})
+
+@app.route('/check-game', methods=['POST'])
+def check_game():
+    body = json.loads(request.data)
+
+    check_fields(body, ['game_code'])
+
+    game_code = body['game_code']
+    print(game_code)
+    game = Game.query.filter_by(game_code=game_code).first()
+
+    if not game:
+        return jsonify({'message': 'Game not found'}), 404
+
+    return jsonify({'game': game_to_dict(game)})
 
 @app.route('/update-scores/', methods=['POST'])
 def update_player_score():
@@ -840,6 +856,12 @@ def get_current_song_uri():
 
     return jsonify({'song_uri': current_song_uri}), 200
     
+@app.route('/is-spotify-logged-in', methods=['GET'])
+def is_spotify_logged_in():
+    if not current_user.is_authenticated:
+        return jsonify({'logged_in': False}), 401
+    return jsonify({'spotify_logged_in': current_user.spotify_logged_in}), 200
+
 """
 Remeber to add a buffer to the play song page, maybe a 3 2 1 countdown before the song starts playing
 """
